@@ -8,7 +8,7 @@ metadata:
 spec:
   generators:
   - git:
-      repoURL: https://github.com/tiagoReichert/backstage-components
+      repoURL: https://github.com/YOUR_USERNAME/backstage-components
       revision: HEAD
       files:
       - path: "*/argocd/application.yaml"
@@ -21,7 +21,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/tiagoReichert/backstage-components
+        repoURL: https://github.com/YOUR_USERNAME/backstage-components
         targetRevision: HEAD
         path: '{{path[0]}}/k8s'
       destination:
