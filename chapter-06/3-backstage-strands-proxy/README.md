@@ -10,9 +10,10 @@ By the end, the Backstage sidebar shows two chat agents side by side:
 ## Prerequisites
 
 - Lab 2 completed. `kubectl -n agent-platform get pods` shows `agent-runtime` and `gitops-mcp` both Running.
-- A port-forward (or other route) from your host to the agent's Service. For local dev:
+- A port-forward (or other route) from your host to the agent's Service. For local dev, in a dedicated terminal that you leave open:
   ```bash
-  kubectl -n agent-platform port-forward svc/agent-runtime 18080:80 &
+  kubectl -n agent-platform port-forward svc/agent-runtime 18080:80
+  # Forwarding from 127.0.0.1:18080 -> 8080 (do not exit; Backstage backend will hit this)
   ```
   Production substitutes: an Ingress, a Service of type LoadBalancer, or — when Backstage itself runs in the cluster — the in-cluster Service DNS `http://agent-runtime.agent-platform.svc.cluster.local`.
 

@@ -48,13 +48,16 @@ The `AuditHook` writes one JSON line per `BeforeToolCallEvent` and one per `Afte
 
 ## Step 1: Build the new images
 
+From this lab's directory (`chapter-06/4-langfuse-audit/`):
+
 ```bash
 cd files/agent
 docker build -t agent-runtime:0.3.2 .
 kind load docker-image agent-runtime:0.3.2 --name agentic-platform
+cd ../..
 ```
 
-Compared to Lab 2 the agent gains four files: `audit.py` (hash-chained log + AuditHook), `telemetry.py` (Langfuse client init), `hooks_langfuse.py` (Strands → Langfuse bridge), `request_context.py` (ContextVar carry for session/user). The Dockerfile is unchanged.
+Compared to Lab 2 the agent gains four files: `audit.py` (hash-chained log + AuditHook), `telemetry.py` (Langfuse client init), `hooks_langfuse.py` (Strands → Langfuse bridge), `request_context.py` (ContextVar carry for session/user). The Dockerfile is unchanged. The Langfuse and Postgres pods use upstream images (`langfuse/langfuse:2`, `postgres:16-alpine`) — nothing for you to build.
 
 ## Step 2: Pre-create the Langfuse Secrets
 
@@ -81,22 +84,48 @@ unset PG_PASS
 
 ## Step 3: Ship Langfuse + the agent update through GitOps
 
-Copy `files/components-repo/langfuse/` to your `backstage-components` repo and the updated `files/components-repo/agent-platform/k8s/` files (the agent's `deployment.yaml` + the new `pvc-audit.yaml`). Open one PR with both folders, merge.
+Two things land in this PR: a new top-level `langfuse/` folder (its own ArgoCD Application) and two updates inside `agent-platform/k8s/` (new image + new PVC). Set `COMPONENTS_REPO` to your local clone:
 
-Within ~3 minutes ArgoCD's ApplicationSet creates a new `langfuse` Application (the namespace + Postgres + Langfuse v2 image, two pods total) and refreshes the agent runtime to v0.3.x.
+```bash
+COMPONENTS_REPO=~/work/backstage-components   # adjust to your path
+
+# 1) New langfuse Application + manifests
+mkdir -p "$COMPONENTS_REPO/langfuse"
+cp -r files/components-repo/langfuse/* "$COMPONENTS_REPO/langfuse/"
+
+# 2) Updated agent deployment (image bump + new env vars + new volume mount)
+#    plus the new audit PVC
+cp files/components-repo/agent-platform/k8s/deployment.yaml \
+   "$COMPONENTS_REPO/agent-platform/k8s/deployment.yaml"
+cp files/components-repo/agent-platform/k8s/pvc-audit.yaml \
+   "$COMPONENTS_REPO/agent-platform/k8s/pvc-audit.yaml"
+
+cd "$COMPONENTS_REPO"
+git checkout -b chapter-06/lab-4
+git add langfuse/ agent-platform/
+git commit -m "chapter 6 lab 4: langfuse stack + audit pvc + agent v0.3.2"
+git push -u origin HEAD
+gh pr create --fill && gh pr merge --merge --delete-branch
+```
+
+Within ~3 minutes ArgoCD's ApplicationSet creates a new `langfuse` Application (namespace + Postgres + Langfuse v2 image, two pods total) and refreshes the agent runtime to v0.3.2.
 
 ```bash
 kubectl -n langfuse get pods -w
 # langfuse-postgres-...   1/1 Running
 # langfuse-...            1/1 Running   (Langfuse may restart 1-2 times waiting for Postgres)
+# Ctrl-C when both Running.
 ```
 
 ## Step 4: Bootstrap Langfuse and create API keys
 
-Langfuse v2 doesn't auto-provision keys. Open the UI once to set up the org, project, and keys:
+Langfuse v2 doesn't auto-provision keys. Open the UI once to set up the org, project, and keys.
+
+In a dedicated terminal, start a port-forward to Langfuse and leave it running for the rest of the chapter (you'll come back to the UI in Lab 5):
 
 ```bash
-kubectl -n langfuse port-forward svc/langfuse 13000:3000 &
+kubectl -n langfuse port-forward svc/langfuse 13000:3000
+# Forwarding from 127.0.0.1:13000 -> 3000  (do not exit)
 ```
 
 In your browser at http://localhost:13000:
@@ -120,8 +149,17 @@ kubectl -n agent-platform rollout restart deploy/agent-runtime
 
 ## Step 5: Verify
 
+This needs three terminals (or two if you put the agent's port-forward in the same terminal you used for Langfuse — different ports, no conflict).
+
+**Terminal A — Langfuse port-forward** (already running from Step 4 if you kept it).
+
+**Terminal B — agent port-forward (leave running):**
 ```bash
-kubectl -n agent-platform port-forward svc/agent-runtime 18080:80 &
+kubectl -n agent-platform port-forward svc/agent-runtime 18080:80
+```
+
+**Terminal C — invoke the agent:**
+```bash
 curl -sS -X POST http://localhost:18080/invoke \
   -H 'Content-Type: application/json' \
   -d '{

@@ -38,6 +38,19 @@ There's a recursive moment worth noticing as you go through the labs: *the platf
 
 Override any of these via environment variables documented in each lab's README.
 
+## Terminals you'll keep open
+
+By Lab 4 you have several long-running things on different terminals. Plan for at least three:
+
+| Terminal | What runs there | When |
+|---|---|---|
+| 1 | `yarn start` for the Backstage app on the host (Chapter 5) | Always — Lab 3 onwards needs the chat UI |
+| 2 | `kubectl -n agent-platform port-forward svc/agent-runtime 18080:80` | Lab 1 onwards (Backstage backend hits this in Lab 3) |
+| 3 | `kubectl -n langfuse port-forward svc/langfuse 13000:3000` | Lab 4 onwards |
+| 4 | Free for `kubectl get`, `curl`, `git`, `gh` | All the time |
+
+`tmux` or your editor's terminal split is fine; just don't close the port-forwards mid-lab — they exit the moment you do, and the symptoms downstream (chat hanging, traces not arriving) look unrelated.
+
 ## Start here
 
 ```bash

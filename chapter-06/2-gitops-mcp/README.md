@@ -40,6 +40,8 @@ Both the agent and the MCP server live in the same `agent-platform` namespace. T
 
 ## Step 1: Build the new images
 
+From this lab's directory (`chapter-06/2-gitops-mcp/`):
+
 ```bash
 # agent-runtime v0.2.x
 cd files/agent
@@ -50,9 +52,11 @@ kind load docker-image agent-runtime:0.2.1 --name agentic-platform
 cd ../gitops-mcp
 docker build -t gitops-mcp:0.1.0 .
 kind load docker-image gitops-mcp:0.1.0 --name agentic-platform
+
+cd ../..   # back to the lab root for the next steps
 ```
 
-If you are not on kind, push to a registry your cluster can pull from and update the `image:` lines in the manifests accordingly.
+If you are not on kind, push both images to a registry your cluster can pull from and update the `image:` lines in the manifests accordingly.
 
 ## Step 2: Create the GitHub token Secret out-of-band
 
@@ -69,18 +73,42 @@ kubectl create secret generic gitops-mcp-github \
 
 ## Step 3: Ship the manifests through GitOps
 
-Copy the contents of `files/components-repo/agent-platform/k8s/` over your existing `agent-platform/k8s/` in the `backstage-components` repo. Five files change in this lab:
+Copy the new and updated manifests from this lab into your local clone of `backstage-components`. Five files change here — one updated (`deployment.yaml`), four new (`configmap-skills.yaml` plus the three `gitops-mcp-*.yaml`):
+
+```bash
+# Replace COMPONENTS_REPO with the absolute path to your local clone of
+# lusoal/backstage-components (or wherever you keep it).
+COMPONENTS_REPO=~/work/backstage-components
+
+cp files/components-repo/agent-platform/k8s/*.yaml \
+   "$COMPONENTS_REPO/agent-platform/k8s/"
+
+cd "$COMPONENTS_REPO"
+git checkout -b chapter-06/lab-2
+git add agent-platform/
+git commit -m "chapter 6 lab 2: gitops-mcp + skill + hook"
+git push -u origin HEAD
+gh pr create --fill && gh pr merge --merge --delete-branch
+```
+
+The end state of `agent-platform/k8s/` in the repo:
 
 ```
 agent-platform/k8s/
+├── argocd/                        (existing, from Lab 1)
+├── configmap-identity.yaml        (existing)
 ├── configmap-skills.yaml          # NEW (mounts the SKILL.md)
 ├── deployment.yaml                # UPDATED (image 0.2.1, MCP_GITOPS_URL env, skills volume)
 ├── gitops-mcp-deployment.yaml     # NEW
 ├── gitops-mcp-service.yaml        # NEW
-└── gitops-mcp-serviceaccount.yaml # NEW
+├── gitops-mcp-serviceaccount.yaml # NEW
+├── namespace.yaml                 (existing)
+├── pvc-memory.yaml                (existing)
+├── service.yaml                   (existing)
+└── serviceaccount.yaml            (existing)
 ```
 
-Open a PR, merge it. Within ~3 minutes ArgoCD reconciles: the gitops-mcp Pod starts, the agent-runtime Pod is recreated with the new image and connects to gitops-mcp at startup.
+Within ~3 minutes ArgoCD reconciles: the gitops-mcp Pod starts, the agent-runtime Pod is recreated with the new image and connects to gitops-mcp at startup.
 
 ```bash
 kubectl -n agent-platform get pods -w
@@ -104,8 +132,15 @@ And the gitops-mcp logs should show streamable-http session traffic from the age
 
 ## Step 5: Smoke test — confirm the agent sees the new capabilities
 
+This needs two terminals.
+
+**Terminal A — port-forward (leave running through Step 6 too):**
 ```bash
-kubectl -n agent-platform port-forward svc/agent-runtime 18080:80 &
+kubectl -n agent-platform port-forward svc/agent-runtime 18080:80
+```
+
+**Terminal B — invoke:**
+```bash
 curl -sS -X POST http://localhost:18080/invoke \
   -H 'Content-Type: application/json' \
   -d '{"intent": "List the skills you have loaded and the tools available.", "session_id": "lab2-smoke"}'
@@ -115,15 +150,16 @@ Expected: a response that names `fix-image-tag` as a discovered skill and lists 
 
 ## Step 6: Drive the demo
 
-Break a deployment manually (simulating a developer typo) and ask the agent to fix it.
+Break a deployment manually (simulating a developer typo) and ask the agent to fix it. This is run from your `backstage-components` clone — same `COMPONENTS_REPO` you used in Step 3.
 
 ```bash
-# In your local clone of lusoal/backstage-components:
+cd "$COMPONENTS_REPO"
+git checkout main && git pull --ff-only
 
-# macOS (BSD sed): empty quoted string after -i
+# macOS (BSD sed): empty string argument after -i is required
 sed -i '' 's|nginx:alpine|nginx:bogus-tag-does-not-exist|' my-first-app/k8s/deployment.yaml
 # Linux (GNU sed): no argument after -i
-# sed -i  's|nginx:alpine|nginx:bogus-tag-does-not-exist|' my-first-app/k8s/deployment.yaml
+# sed -i 's|nginx:alpine|nginx:bogus-tag-does-not-exist|' my-first-app/k8s/deployment.yaml
 
 git checkout -b demo/break-image
 git commit -am "demo: break image tag"
@@ -131,7 +167,11 @@ git push -u origin demo/break-image
 gh pr create --fill && gh pr merge --merge --delete-branch
 ```
 
-Wait ~3 minutes for ArgoCD to apply the bad image. `kubectl -n default get pods -l app=my-first-app` will show the new pod in `ErrImagePull`.
+Wait ~3 minutes for ArgoCD to apply the bad image. Watch with:
+```bash
+kubectl -n default get pods -l app=my-first-app -w
+# A new pod appears in ErrImagePull / ImagePullBackOff. Ctrl-C when you see it.
+```
 
 Now invoke the agent:
 
