@@ -145,7 +145,15 @@ If you see `Agent type not specified for agent X`, you forgot to add `type:` to 
 
 ## Step 6: Try it in the UI
 
-Open `http://localhost:3000`. The sidebar shows two chat items now. Click **Platform Agent** and ask:
+Open `http://localhost:3000`. The sidebar shows two chat items now — *Chat Assistant* (langgraph-react, in-process from Chapter 5) and *Platform Agent* (strands-proxy, this lab):
+
+![Backstage sidebar with both Chat Assistant and Platform Agent items](../screenshots/01-backstage-catalog.png)
+
+Click **Platform Agent**. The first time you visit, the chat is empty:
+
+![Platform Agent — empty state](../screenshots/02-platform-agent-empty.png)
+
+Ask:
 
 > *my-first-app is failing with ImagePullBackOff. The deployment lives at my-first-app/k8s/deployment.yaml in the GitOps repo. Diagnose and open a PR to fix it.*
 

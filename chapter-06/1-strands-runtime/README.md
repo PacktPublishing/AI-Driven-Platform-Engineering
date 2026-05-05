@@ -140,6 +140,10 @@ gh pr create --fill && gh pr merge --merge --delete-branch
 
 The `backstage-app-discovery` ApplicationSet from Chapter 5 picks up `agent-platform/argocd/application.yaml` within ~3 minutes and creates an `agent-platform` ArgoCD Application.
 
+After ~3 minutes, the ArgoCD `Applications` view shows the new `agent-platform` application alongside whatever else you have running:
+
+![ArgoCD applications view: agent-platform Synced/Healthy](../screenshots/06-argocd-applications.png)
+
 ## Step 5: Watch ArgoCD reconcile
 
 The `-w` flag streams updates; press Ctrl-C when the application reaches Synced + Healthy and the pod reaches Running 1/1. Both can be in the same terminal, or you can split into two:

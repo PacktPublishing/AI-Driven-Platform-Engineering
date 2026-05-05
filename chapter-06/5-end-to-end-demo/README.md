@@ -115,13 +115,21 @@ The chat replies with something like:
 > 
 > Changed the image tag from `:bogus-tag-does-not-exist` to `:alpine` to fix the ImagePullBackOff. Merge the PR and ArgoCD will reconcile the working image.
 
+For a non-fix flow that exercises the same path, you can also just ask the agent to read the manifest:
+
+![Platform Agent chat — read_file tool call returning the image tag](../screenshots/03-platform-agent-tool-call.png)
+
 ## Step 4: Read the agent's PR
 
-Open the PR URL the chat returned. Inspect three things:
+Open the PR URL the chat returned:
+
+![Agent's PR — Conversation tab with structured body (Symptom / Root cause / Before / After)](../screenshots/07-github-pr-conversation.png)
+
+Inspect three things:
 
 - **Title** starts with `[agent]` — required by the `AlwaysPRHook`. If you remove that prefix in the SKILL.md and re-run the demo, the hook rejects the call and the chat reports the rejection back to you.
 - **Body** has a one-paragraph rationale: symptom, root cause, before/after, consequence. Required by the same hook (≥20 chars).
-- **Diff** is exactly one line: `image: ...:bogus-tag-does-not-exist` → `image: ...:alpine`. The agent does whole-file replace, not surgical edits — but the only thing that changed is the tag.
+- **Diff** is exactly one line: `image: ...:bogus-tag-does-not-exist` → `image: ...:alpine`. The agent does whole-file replace, not surgical edits — but the only thing that changed is the tag. (Open the *Files changed* tab to confirm.)
 
 ## Step 5: See the trace in Langfuse
 

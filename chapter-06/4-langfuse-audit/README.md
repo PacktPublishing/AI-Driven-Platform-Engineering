@@ -169,10 +169,18 @@ curl -sS -X POST http://localhost:18080/invoke \
   }'
 ```
 
-In the Langfuse UI, refresh the **Traces** page. You should see:
+In the Langfuse UI, refresh the **Traces** page. You should see one row per `/invoke` call, with the session and user id you set in the request:
 
-- A trace named `platform-ops.invoke` with `session: lab4-smoke` and `user: user:default/guest`.
-- Inside it, a span named `tool:read_file` with the duration of the gitops-mcp call.
+![Langfuse Traces list](../screenshots/04-langfuse-traces-list.png)
+
+Click into a trace. The detail view shows the metadata, the trace tree on the right, and one span per tool call (here, `tool:read_file` running for 0.31s under the parent `platform-ops.invoke` trace):
+
+![Langfuse trace detail with tool span](../screenshots/05-langfuse-trace-detail.png)
+
+What you should see:
+
+- A trace named `platform-ops.invoke` with the `session_id` and `user_id` you sent.
+- Inside it, one span named `tool:<tool>` per call the agent makes — e.g., `tool:read_file` with the gitops-mcp call duration.
 
 Then check the audit log:
 
