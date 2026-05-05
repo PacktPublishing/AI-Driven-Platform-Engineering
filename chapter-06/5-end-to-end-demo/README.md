@@ -76,15 +76,18 @@ kubectl -n default get pods -l app=my-first-app -w
 
 A new pod appears with `STATUS=ErrImagePull` (it will cycle through `ImagePullBackOff` too). The two old pods stay `Running` until the new one becomes Ready, which it never will. The deployment is stuck. Press Ctrl-C when you've seen the failure.
 
-## Step 2: Notice the failure in Backstage
+## Step 2: Notice the failure
 
-Open Backstage at http://localhost:3000. You don't strictly need this step — the agent doesn't read Backstage's catalog state, it reads the Git repo. But seeing the broken component in the UI matches a real on-call pager: a developer notices something wrong, then escalates to the agent.
+Backstage's catalog page shows `my-first-app` is registered, but it doesn't surface pod-level health out of the box (the chapter-5 labs don't wire `@backstage/plugin-kubernetes`). The two places you actually see the failure are:
 
-If you set up the Chapter 5 Lab 4 kubectl actions, you can ask the **Chat Assistant** (the chapter-5 in-process langgraph agent) something like:
+- **ArgoCD UI** — `kubectl port-forward svc/argocd-server -n argocd 8080:443` then https://localhost:8080. The `my-first-app` Application goes from green to a degraded/progressing state with the pod stuck in `ImagePullBackOff`. This is the cluster-truth view.
+- **The Chapter 5 Chat Assistant** — if you completed chapter-5 Lab 4, the in-process langgraph agent has the kubectl actions wired. Open the **Chat Assistant** (not Platform Agent yet) in the Backstage sidebar and ask:
 
-> *Are any pods in the default namespace failing?*
+  > *Are any pods in the default namespace failing? If so, why?*
 
-It will fan out the catalog + kubectl actions and surface the broken pod. This is the *Workflow vs Agent* distinction made visible — the chat assistant is a Stage-2/3 system answering a structured question; the Platform Agent we'll use next is Stage-4 reasoning autonomously about a fix.
+  It fans out the kubectl actions, surfaces the broken pod, and reports the `ImagePullBackOff` reason. This is the *Workflow vs Agent* distinction made visible — the Chat Assistant is a Stage-2/3 system answering a structured question through a fixed action set; the Platform Agent we'll use next is Stage-4 reasoning autonomously about a fix.
+
+You don't strictly need either step before invoking the Platform Agent — the agent reads the Git repo, not the cluster — but seeing the broken state first matches a real on-call pager: a developer notices something wrong, then escalates to the agent.
 
 ## Step 3: Drive the fix from the Platform Agent chat
 
