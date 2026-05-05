@@ -19,30 +19,21 @@ We'll register four Kubernetes actions with the AI assistant:
 
 ## Step 1: Install Dependencies
 
+> **Note:** `@backstage/plugin-mcp-actions-backend` was already installed and registered in Lab 2 (the GenAI plugin needs it for service ref resolution). Here we only add `zod`, which the kubectl actions module uses to declare its input schema.
+
 ```bash
-yarn workspace backend add zod @backstage/plugin-mcp-actions-backend
+yarn workspace backend add zod
 ```
 
 ---
 
-## Step 2: Register the MCP Actions Plugin
-
-Edit `packages/backend/src/index.ts` and add:
-
-```typescript
-// Add MCP Actions Backend Plugin
-backend.add(import('@backstage/plugin-mcp-actions-backend'));
-```
-
----
-
-## Step 3: Add the Kubectl Actions Module
+## Step 2: Add the Kubectl Actions Module
 
 Create the modules directory and copy the file:
 
 ```bash
 mkdir -p packages/backend/src/modules
-cp ../chapter-04/4-add-kubernetes-actions/files/kubectl-mcp-actions.ts packages/backend/src/modules/
+cp ../ai-driven-platform-engineering/chapter-05/4-add-kubernetes-actions/files/kubectl-mcp-actions.ts packages/backend/src/modules/
 ```
 
 Your backend should now have:
@@ -56,12 +47,12 @@ packages/backend/src/
 
 ---
 
-## Step 4: Register the Module
+## Step 3: Register the Module
 
-Edit `packages/backend/src/index.ts` and add:
+Edit `packages/backend/src/index.ts` and add (after the lines from Lab 2):
 
 ```typescript
-// Add kubectl actions module
+// Add kubectl actions module (chapter-05 lab 4)
 backend.add(import('./modules/kubectl-mcp-actions'));
 ```
 
@@ -73,14 +64,14 @@ const backend = createBackend();
 
 // ... existing plugins ...
 
-// Add GenAI Plugin
+// MCP actions registry (added in Lab 2; required by aws-genai)
+backend.add(import('@backstage/plugin-mcp-actions-backend'));
+
+// GenAI plugin (added in Lab 2)
 backend.add(import('@aws/genai-plugin-for-backstage-backend'));
 backend.add(import('@aws/genai-plugin-langgraph-agent-for-backstage'));
 
-// Add MCP Actions Backend Plugin
-backend.add(import('@backstage/plugin-mcp-actions-backend'));
-
-// Add kubectl actions module
+// Kubectl actions module (chapter-05 lab 4)
 backend.add(import('./modules/kubectl-mcp-actions'));
 
 backend.start();
@@ -88,7 +79,7 @@ backend.start();
 
 ---
 
-## Step 5: Update Plugin Sources
+## Step 4: Update Plugin Sources
 
 Add `mcp-actions` to the `backend.actions.pluginSources` in `app-config.yaml`:
 
@@ -103,7 +94,7 @@ backend:
 
 ---
 
-## Step 6: Add Actions to the Agent
+## Step 5: Add Actions to the Agent
 
 Update `app-config.yaml` to include the Kubernetes actions:
 
@@ -139,7 +130,7 @@ genai:
 
 ---
 
-## Step 7: Configure Kubernetes Access
+## Step 6: Configure Kubernetes Access
 
 Ensure kubectl is configured:
 
@@ -150,7 +141,7 @@ kubectl get ns
 
 ---
 
-## Step 8: Test the Kubernetes Integration
+## Step 7: Test the Kubernetes Integration
 
 ```bash
 NODE_OPTIONS=--no-node-snapshot yarn start
