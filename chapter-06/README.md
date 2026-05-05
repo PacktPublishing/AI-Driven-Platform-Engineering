@@ -8,9 +8,10 @@ The labs build a minimum production-grade agent end-to-end:
 |---|---|---|
 | **0 — Prerequisites** | Verify the Chapter 5 stack is alive (kind cluster, Backstage, ArgoCD, ApplicationSet, components repo) | — |
 | **1 — Strands runtime** | A FastAPI service wrapping a Strands `Agent`, with file-based identity (`SOUL.md`, `IDENTITY.md`, `USER.md`, `MEMORY.md`) — deployed *through* the ArgoCD ApplicationSet you set up in Chapter 5 | *A Strands Agent as a Service* + *Memory in two layers* |
-| **2 — GitOps MCP server** | One MCP server: clones the components repo, edits a YAML, opens a PR. Plus one skill (`scale-deployment`) and one Strands hook (always-PR, never-apply-direct) | *Domain-Scoped MCP Servers* + *Skills as Procedural Knowledge* + *Governed Writes via Hooks* |
-| **3 — Langfuse + audit log** | Local Langfuse (in-cluster) collecting OpenTelemetry traces from the agent, plus a hash-chained append-only audit log | *Observability and Audit* |
-| **4 — End-to-end demo** | Drive the full loop: ask the agent to scale `my-first-app`, watch the PR open, merge, ArgoCD reconcile, and trace it all in Langfuse | — |
+| **2 — GitOps MCP + skill + hook** | One MCP server: clones the components repo, edits a YAML, opens a PR. Plus one skill (`fix-image-tag`) and one Strands hook (`AlwaysPRHook`) | *Domain-Scoped MCP Servers* + *Skills as Procedural Knowledge* + *Governed Writes via Hooks* |
+| **3 — Backstage strands-proxy module** | Backstage backend module that registers `strands-proxy` as a new agent type with the Chapter 5 GenAI plugin, so the chat sidebar can talk to the agent over HTTP | *Where We Are Going* (Figure 6.3) |
+| **4 — Langfuse + audit log** | Local Langfuse (in-cluster) collecting traces from the agent via the Langfuse Python SDK, plus a hash-chained append-only audit log on a PVC | *Observability and Audit* |
+| **5 — End-to-end demo walk-through** | Drive the full loop with everything live: break `my-first-app`, ask the Platform Agent to fix it from the Backstage chat, watch the PR open, merge, see the trace in Langfuse, verify the audit chain | — |
 
 ## What we deliberately keep out
 

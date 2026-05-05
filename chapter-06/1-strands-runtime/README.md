@@ -4,7 +4,7 @@ In Chapter 5, the chat loop lives inside Backstage as the `@aws/genai-plugin-for
 
 We do *not* remove the Chapter 5 chat plugin. It keeps working. The agent we build here is a second consumer of the platform, exposed as an HTTP endpoint that any client can call (Backstage, Slack, a cron job — the chapter calls these "trigger sources").
 
-By the end of this lab, the agent answers HTTP `POST /invoke` calls and has no tools yet. Lab 2 wires up the `gitops-mcp` server. Lab 3 adds Langfuse observability.
+By the end of this lab, the agent answers HTTP `POST /invoke` calls and has no tools yet. Lab 2 wires up the `gitops-mcp` server. Lab 3 wires the Backstage chat plugin to the agent so users can drive it from the sidebar. Lab 4 adds Langfuse observability and a hash-chained audit log.
 
 ## Prerequisites
 
@@ -186,9 +186,10 @@ This is the *deliberate, version-controlled* memory pattern from the chapter, ma
 ## What's missing
 
 - **No tools.** The agent can talk and write to its own memory, but it cannot do anything to the platform. Lab 2 adds the `gitops-mcp` server.
-- **No skills.** Lab 2 adds a `scale-deployment` skill that the agent loads through progressive disclosure.
-- **No governance.** The system prompt says "never apply directly," but nothing *enforces* that yet. Lab 2 adds a Strands Hook that rejects any direct-apply attempt in code, not in prompt.
-- **No observability beyond stdout JSON logs.** Lab 3 adds Langfuse and a hash-chained audit log.
+- **No skills.** Lab 2 adds a `fix-image-tag` skill that the agent loads through progressive disclosure.
+- **No governance.** The system prompt says "never apply directly," but nothing *enforces* that yet. Lab 2 adds a Strands Hook that rejects any malformed open-PR call in code, not in prompt.
+- **No UI trigger.** The only client is `curl`. Lab 3 wires the Backstage chat plugin to call the agent over HTTP.
+- **No observability beyond stdout JSON logs.** Lab 4 adds Langfuse and a hash-chained audit log.
 
 Move on to [Lab 2](../2-gitops-mcp/README.md) when you're ready.
 

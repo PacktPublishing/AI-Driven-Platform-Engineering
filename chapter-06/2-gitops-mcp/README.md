@@ -119,7 +119,12 @@ Break a deployment manually (simulating a developer typo) and ask the agent to f
 
 ```bash
 # In your local clone of lusoal/backstage-components:
+
+# macOS (BSD sed): empty quoted string after -i
 sed -i '' 's|nginx:alpine|nginx:bogus-tag-does-not-exist|' my-first-app/k8s/deployment.yaml
+# Linux (GNU sed): no argument after -i
+# sed -i  's|nginx:alpine|nginx:bogus-tag-does-not-exist|' my-first-app/k8s/deployment.yaml
+
 git checkout -b demo/break-image
 git commit -am "demo: break image tag"
 git push -u origin demo/break-image

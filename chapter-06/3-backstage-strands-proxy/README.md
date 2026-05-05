@@ -40,11 +40,12 @@ When the chat plugin streams a response, the `langgraph-react` agent type runs t
 
 ## Step 1: Drop in the Backstage backend module
 
-Copy the file:
+Copy the file into the Backstage app you scaffolded in Chapter 5. Replace `BACKSTAGE_APP` with the absolute path to your app (e.g. `~/Documents/book-ai-for-plaform-engineering/my-backstage-app`):
 
 ```bash
+BACKSTAGE_APP=~/Documents/book-ai-for-plaform-engineering/my-backstage-app
 cp files/strands-proxy-agent.ts \
-   ../my-backstage-app/packages/backend/src/modules/strands-proxy-agent.ts
+   "$BACKSTAGE_APP/packages/backend/src/modules/strands-proxy-agent.ts"
 ```
 
 The module is ~110 lines. Highlights:
@@ -120,8 +121,12 @@ import { ChatIcon, /* existing imports */ } from '@backstage/core-components';
 
 ## Step 5: Restart Backstage
 
+Kill any running `yarn start` first (the backstage-cli watcher reloads file changes inside one process, but adding a new module that's pulled in by `index.ts` requires a full restart):
+
 ```bash
-# (kill the existing yarn start; corepack/Node 22)
+pkill -f "yarn start"; pkill -f "backstage-cli"
+sleep 2
+# In the my-backstage-app directory, with Node 22 and your AWS env vars set:
 NODE_OPTIONS=--no-node-snapshot yarn start
 ```
 
