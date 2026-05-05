@@ -20,19 +20,20 @@ By the end, the Backstage sidebar shows two chat agents side by side:
 
 The AWS GenAI plugin core (`@aws/genai-plugin-for-backstage-backend`) exposes an `agentTypeExtensionPoint`. The `langgraph-react` agent type is itself a separate module (`@aws/genai-plugin-langgraph-agent-for-backstage`) that registers with this extension point. Anyone can write a parallel module that registers a new agent type. That's exactly what this lab does:
 
-```
-[Browser] → assistant/platform-ops
-     ↓
-[Backstage frontend] (chat-plugin chat UI, unchanged)
-     ↓ /api/aws-genai/...
-[Backstage backend]
-   ├── @aws/genai-plugin-for-backstage-backend     (chat router)
-   ├── @aws/genai-plugin-langgraph-agent-for-backstage  (registers 'langgraph-react')
-   └── ./modules/strands-proxy-agent.ts            (registers 'strands-proxy')  ← THIS LAB
-                ↓ POST {url}/invoke
-[host port-forward]
-                ↓
-[agent-runtime in agent-platform ns]
+```mermaid
+flowchart TB
+    Browser(["Browser"]) -->|/assistant/platform-ops| Frontend
+
+    subgraph BS["Backstage (host, yarn start)"]
+        Frontend["chat plugin UI<br/>(unchanged from Chapter 5)"]
+        Frontend -->|/api/aws-genai/...| Backend["Backstage backend"]
+
+        Backend --> GenAI["@aws/genai-plugin-for-backstage-backend<br/>(chat router)"]
+        GenAI -.registers agent type.-> LG["@aws/genai-plugin-langgraph-agent-for-backstage<br/>'langgraph-react'"]
+        GenAI -.registers agent type.-> SP["./modules/strands-proxy-agent.ts<br/>'strands-proxy' ← THIS LAB"]
+    end
+
+    SP -->|POST /invoke<br/>via host port-forward| Strands["agent-runtime<br/>(agent-platform ns)"]
 ```
 
 When the chat plugin streams a response, the `langgraph-react` agent type runs the LLM in-process. The `strands-proxy` agent type instead does an HTTP POST to the Strands runtime, gets the response back, and emits it as a single `ChunkEvent` followed by a `ResponseEvent`. The chat UI doesn't know the difference.

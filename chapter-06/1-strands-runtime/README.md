@@ -14,24 +14,19 @@ By the end of this lab, the agent answers HTTP `POST /invoke` calls and has no t
 
 ## Architecture
 
-```
-                  +--- POST /invoke ---+
-                  |                    |
-   any client ---->                    v
-                  |    agent-runtime (Pod, ns: agent-platform)
-                  |    +-----------------------------------+
-                  |    | FastAPI                           |
-                  |    |   └─ Strands Agent                |
-                  |    |       ├─ system prompt assembled  |
-                  |    |       │   from /state/identity/   |
-                  |    |       │     SOUL.md / IDENTITY.md /|
-                  |    |       │     USER.md (ConfigMap RO)|
-                  |    |       ├─ FileSessionManager       |
-                  |    |       │   on emptyDir             |
-                  |    |       └─ tools=[save_to_memory]   |
-                  |    |           writes /state/memory/   |
-                  |    |              MEMORY.md (PVC)      |
-                  +    +-----------------------------------+
+```mermaid
+flowchart LR
+    Client(["any client"]) -->|POST /invoke| FastAPI
+
+    subgraph Pod["agent-runtime Pod · ns: agent-platform"]
+        FastAPI --> Agent["Strands Agent"]
+        Agent --- Prompt["system prompt assembled<br/>from SOUL.md + IDENTITY.md + USER.md"]
+        Agent --- Sess["FileSessionManager<br/>(emptyDir)"]
+        Agent --- Tool["tool: save_to_memory"]
+    end
+
+    Prompt -. read at startup .-> CM[("ConfigMap<br/>agent-identity")]
+    Tool -. append .-> Mem[("PVC agent-memory<br/>MEMORY.md")]
 ```
 
 The split between `ConfigMap` (read-only, GitOps-versioned) and `PVC` (read-write, persisted across restarts) makes the *deliberate vs. automatic memory* distinction from the chapter literal: SOUL/IDENTITY/USER are checked into git, edited through PRs, and rolled back via `git revert`; MEMORY is appended to by the agent itself when it decides a fact is worth promoting.

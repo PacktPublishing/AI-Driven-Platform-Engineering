@@ -15,18 +15,22 @@ Both run inside the cluster. Langfuse goes in its own `langfuse` namespace; the 
 
 ## Architecture
 
-```
-agent-platform ns                              langfuse ns
-+----------------------------+                +-----------------------+
-| agent-runtime v0.3.x       |                | langfuse (v2.x)       |
-|   ├─ AlwaysPRHook (Lab 2)  |                |  Next.js UI + API     |
-|   ├─ AuditHook (Lab 4) ────┼──> /state/     |                       |
-|   │                         |     audit/    |  langfuse Python SDK  |
-|   │                         |     AUDIT.log |  -> /api/public/      |
-|   └─ LangfuseStrandsHook ───┼──────────────>|     ingestion          |
-|                            |                +-----------------------+
-| gitops-mcp (Lab 2)         |                | langfuse-postgres     |
-+----------------------------+                +-----------------------+
+```mermaid
+flowchart LR
+    subgraph AP["agent-platform namespace"]
+        Agent["agent-runtime v0.3.x<br/>· AlwaysPRHook (Lab 2)<br/>· AuditHook (Lab 4)<br/>· LangfuseStrandsHook (Lab 4)"]
+        MCP["gitops-mcp (Lab 2)"]
+        Audit[("PVC agent-audit<br/>AUDIT.log")]
+        Agent -. append + chain .-> Audit
+    end
+
+    subgraph LF["langfuse namespace"]
+        Web["langfuse v2.x<br/>Next.js UI + API"]
+        PG[("langfuse-postgres<br/>(PVC)")]
+        Web --- PG
+    end
+
+    Agent -->|"langfuse Python SDK<br/>POST /api/public/ingestion"| Web
 ```
 
 The agent's `LangfuseStrandsHook` subscribes to four Strands hook events:

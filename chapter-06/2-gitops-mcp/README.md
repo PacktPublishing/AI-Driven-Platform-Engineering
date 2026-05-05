@@ -11,27 +11,19 @@ By the end, asking the agent *"my-first-app is failing with ImagePullBackOff, fi
 
 ## Architecture
 
-```
-                 +-- POST /invoke ------------------+
-                 |                                  v
-   client ------->     agent-runtime  (v0.2.x)
-                                |
-                                | MCP streamable-http
-                                v
-                          gitops-mcp  (Python + GitHub REST API)
-                                |
-                                | Bearer token (k8s Secret)
-                                v
-                         GitHub REST API
-                                |
-                                v
-                  branch + commit + PR on backstage-components
-                                |
-                                v
-                         (human merge)
-                                |
-                                v
-                        ArgoCD reconciles
+```mermaid
+flowchart TD
+    Client(["any client"]) -->|POST /invoke| Agent
+
+    subgraph AP["agent-platform namespace"]
+        Agent["agent-runtime (v0.2.x)"]
+        MCP["gitops-mcp<br/>(Python + GitHub REST API)"]
+        Agent -->|MCP streamable-http| MCP
+    end
+
+    MCP -->|Bearer token<br/>from Secret gitops-mcp-github| GH["GitHub REST API"]
+    GH --> PR["branch + commit + PR<br/>on backstage-components"]
+    PR -.human merges.-> Argo["ArgoCD reconciles"]
 ```
 
 Both the agent and the MCP server live in the same `agent-platform` namespace. The agent talks to the MCP server through the cluster Service `gitops-mcp.agent-platform.svc.cluster.local:8080`. The MCP server talks to GitHub directly with a token mounted from a Kubernetes Secret.
