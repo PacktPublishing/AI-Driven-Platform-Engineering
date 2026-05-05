@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: langfuse-postgres
+  namespace: langfuse
+spec:
+  type: ClusterIP
+  selector:
+    app: langfuse-postgres
+  ports:
+    - name: pg
+      port: 5432
+      targetPort: 5432

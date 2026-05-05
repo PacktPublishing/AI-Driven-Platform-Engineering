@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitops-mcp
+  namespace: agent-platform
+  labels:
+    app: gitops-mcp
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: gitops-mcp
+  template:
+    metadata:
+      labels:
+        app: gitops-mcp
+    spec:
+      serviceAccountName: gitops-mcp
+      containers:
+        - name: gitops-mcp
+          image: gitops-mcp:0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: GITOPS_REPO_OWNER
+              value: lusoal
+            - name: GITOPS_REPO_NAME
+              value: backstage-components
+            - name: GITOPS_DEFAULT_BRANCH
+              value: main
+          envFrom:
+            - secretRef:
+                name: gitops-mcp-github
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi

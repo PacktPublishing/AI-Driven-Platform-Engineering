@@ -4,13 +4,15 @@ This lab covers adding the AWS GenAI plugin to enable an AI-powered chat interfa
 
 ## Prerequisites
 
-- Completed Lab 1 (Backstage with GitOps)
+- Completed Lab 1 (Backstage with GitOps), including the `package.json` `resolutions` block from [`../1-backstage-setup/files/package-resolutions.json`](../1-backstage-setup/files/package-resolutions.json) — the chat plugin's transitive dependencies (especially `@langchain/ollama` and `@backstage/plugin-mcp-actions-backend`) are pinned there
 - AWS account with Bedrock access enabled and AWS credentials configured, OR
 - OpenAI API key (see the [plugin documentation](https://github.com/awslabs/genai-for-backstage) for OpenAI configuration)
 
 ## Overview
 
 We'll add a chat assistant that can answer general questions. At this stage, it won't have access to Backstage data yet - that comes in the next lab.
+
+The GenAI plugin's `agent-langgraph` module depends on a service ref (`alpha.core.actionsRegistry`) that is provided by `@backstage/plugin-mcp-actions-backend`. We install both plugins together here even though the chapter introduces the MCP actions module formally in Lab 4 — without it, the GenAI plugin will refuse to start.
 
 > **Note:** This guide uses AWS Bedrock as the LLM provider. The plugin also supports OpenAI as an alternative.
 
@@ -19,7 +21,10 @@ We'll add a chat assistant that can answer general questions. At this stage, it 
 ## Step 1: Install Backend Dependencies
 
 ```bash
-yarn workspace backend add @aws/genai-plugin-for-backstage-backend @aws/genai-plugin-langgraph-agent-for-backstage
+yarn workspace backend add \
+  @aws/genai-plugin-for-backstage-backend \
+  @aws/genai-plugin-langgraph-agent-for-backstage \
+  @backstage/plugin-mcp-actions-backend
 ```
 
 ## Step 2: Register Backend Plugins
@@ -27,39 +32,15 @@ yarn workspace backend add @aws/genai-plugin-for-backstage-backend @aws/genai-pl
 Edit `packages/backend/src/index.ts` and add the following before `backend.start()`:
 
 ```typescript
-// Add GenAI Plugin
+// MCP actions registry (provides core.actionsRegistry; required by aws-genai)
+backend.add(import('@backstage/plugin-mcp-actions-backend'));
+
+// GenAI plugin
 backend.add(import('@aws/genai-plugin-for-backstage-backend'));
 backend.add(import('@aws/genai-plugin-langgraph-agent-for-backstage'));
 ```
 
-**Complete `packages/backend/src/index.ts` should look like:**
-
-```typescript
-import { createBackend } from '@backstage/backend-defaults';
-
-const backend = createBackend();
-
-backend.add(import('@backstage/plugin-app-backend'));
-backend.add(import('@backstage/plugin-proxy-backend'));
-backend.add(import('@backstage/plugin-scaffolder-backend'));
-backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
-backend.add(import('@backstage/plugin-techdocs-backend'));
-backend.add(import('@backstage/plugin-auth-backend'));
-backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
-backend.add(import('@backstage/plugin-catalog-backend'));
-backend.add(import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'));
-backend.add(import('@backstage/plugin-permission-backend'));
-backend.add(import('@backstage/plugin-permission-backend-module-allow-all-policy'));
-backend.add(import('@backstage/plugin-search-backend'));
-backend.add(import('@backstage/plugin-search-backend-module-catalog'));
-backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
-
-// Add GenAI Plugin
-backend.add(import('@aws/genai-plugin-for-backstage-backend'));
-backend.add(import('@aws/genai-plugin-langgraph-agent-for-backstage'));
-
-backend.start();
-```
+The `mcp-actions-backend` import has to come **before** the GenAI plugin imports, because the GenAI plugin's startup hooks resolve the actions registry service from it.
 
 ---
 
@@ -179,8 +160,11 @@ NODE_OPTIONS=--no-node-snapshot yarn start
 - Ensure the route is added to App.tsx
 
 ### Backend startup errors
-- Check that both backend plugins are installed
+- Check that **all three** backend plugins are installed (mcp-actions-backend, genai-plugin-for-backstage-backend, genai-plugin-langgraph-agent-for-backstage) and registered in `packages/backend/src/index.ts`
 - Verify the imports in index.ts are correct
+- If you see `Service or extension point dependencies of plugin 'aws-genai' are missing for the following ref(s): serviceRef{alpha.core.actions}`, the `mcp-actions-backend` plugin is missing or registered after the GenAI plugin
+- If you see `Service or extension point dependencies of plugin 'X' are missing for the following ref(s): serviceRef{alpha.core.metrics}` for catalog/scaffolder/mcp-actions, your `package.json` `resolutions` are not pinned — re-apply [`../1-backstage-setup/files/package-resolutions.json`](../1-backstage-setup/files/package-resolutions.json) and run `yarn install`
+- If you see `ERR_PACKAGE_PATH_NOT_EXPORTED ./utils/uuid` from `@langchain/ollama`, your `@langchain/*` resolutions are missing or not applied — `yarn install` after fixing `package.json`
 
 ---
 

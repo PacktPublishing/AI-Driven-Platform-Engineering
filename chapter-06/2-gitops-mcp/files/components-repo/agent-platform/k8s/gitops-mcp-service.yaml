@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitops-mcp
+  namespace: agent-platform
+  labels:
+    app: gitops-mcp
+spec:
+  type: ClusterIP
+  selector:
+    app: gitops-mcp
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
