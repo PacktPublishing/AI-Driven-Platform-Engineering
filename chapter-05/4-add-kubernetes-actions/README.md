@@ -4,8 +4,7 @@ This lab covers creating custom actions that allow the AI assistant to query Kub
 
 ## Prerequisites
 
-- Completed Lab 3 (Catalog actions working)
-- kubectl configured to access your Kubernetes cluster
+- Completed Lab 1, Lab 2, and Lab 3
 
 ## Overview
 
