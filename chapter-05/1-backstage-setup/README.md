@@ -17,8 +17,6 @@ This lab covers creating a Backstage application with GitHub integration, ArgoCD
 - Install [kind](https://kind.sigs.k8s.io/docs/user/quick-start/)
 
 ```bash
-# 
-
 cat <<EOF | kind create cluster --name agentic-platform --config=-
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
