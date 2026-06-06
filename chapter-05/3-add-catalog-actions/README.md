@@ -53,7 +53,7 @@ genai:
       langgraph:
         messagesMaxTokens: 150000
         bedrock:
-          modelId: 'us.anthropic.claude-sonnet-4-5-20250929-v1:0'
+          modelId: 'global.anthropic.claude-sonnet-4-5-20250929-v1:0'
           region: us-west-2
       actions:
         - get-catalog-entity  # Fetch specific entity by kind/namespace/name
