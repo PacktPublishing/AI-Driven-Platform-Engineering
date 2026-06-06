@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${{ values.name }}-html
+  namespace: ${{ values.namespace }}
+  labels:
+    app: ${{ values.name }}
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>${{ values.name }}</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+        .container { background: white; padding: 30px; border-radius: 8px; max-width: 600px; margin: 0 auto; }
+        h1 { color: #333; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>${{ values.name }}</h1>
+        <p>${{ values.description }}</p>
+        <p><strong>Namespace:</strong> ${{ values.namespace }}</p>
+        <p><strong>Owner:</strong> ${{ values.owner }}</p>
+      </div>
+    </body>
+    </html>
