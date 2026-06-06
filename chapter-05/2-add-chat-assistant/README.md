@@ -99,7 +99,7 @@ genai:
         messagesMaxTokens: 150000 # Set based on context of chosen model, prune message history based on number of tokens
         # Use appropriate snippet for your model provider
         bedrock:
-          modelId: 'anthropic.claude-3-5-sonnet-20241022-v2:0'
+          modelId: 'global.anthropic.claude-sonnet-4-5-20250929-v1:0'
           region: us-west-2
         # openai:
         #   apiKey: ${OPENAI_API_KEY}
