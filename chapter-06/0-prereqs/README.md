@@ -13,25 +13,6 @@ You should already have, from Chapter 5:
 5. A GitHub repository (the `backstage-components` repo from Chapter 5) that the ApplicationSet polls.
 6. At least one app deployed through the GitOps flow (e.g., `my-first-app`). This is what proves the loop works.
 
-## If you don't have a kind cluster yet
-
-```bash
-# Install kind if needed: https://kind.sigs.k8s.io/docs/user/quick-start/
-
-cat <<EOF | kind create cluster --name agentic-platform --config=-
-kind: Cluster
-apiVersion: kind.x-k8s.io/v1alpha4
-nodes:
-- role: control-plane
-  extraPortMappings:
-  - containerPort: 30080
-    hostPort: 30080
-    listenAddress: "127.0.0.1"
-  - containerPort: 30443
-    hostPort: 30443
-    listenAddress: "127.0.0.1"
-EOF
-```
 
 Then re-run Chapter 5's Part 3 (Install ArgoCD) and Part 5 (Test the Complete Flow) against this cluster before continuing.
 

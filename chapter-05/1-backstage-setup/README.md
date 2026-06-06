@@ -8,8 +8,31 @@ This lab covers creating a Backstage application with GitHub integration, ArgoCD
 - **Yarn 4.x** (Backstage 0.7.x scaffolds use yarn 4 via Corepack — `corepack enable` if needed)
 - GitHub account with a Personal Access Token (PAT)
 - kubectl installed and configured
-- A Kubernetes cluster (IF you want to use Amazon EKS see [Getting Started](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html))
+- A Kubernetes cluster (IF you want to use Amazon EKS see [Getting Started](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)). You can also create a kind cluster for local testing.
 - Metrics Server installed on your cluster (required for HPA)
+
+### In case you want to use kind cluster for local testing
+
+- Install [Docker](https://docs.docker.com/get-started/get-docker/)
+- Install [kind](https://kind.sigs.k8s.io/docs/user/quick-start/)
+
+```bash
+# 
+
+cat <<EOF | kind create cluster --name agentic-platform --config=-
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  extraPortMappings:
+  - containerPort: 30080
+    hostPort: 30080
+    listenAddress: "127.0.0.1"
+  - containerPort: 30443
+    hostPort: 30443
+    listenAddress: "127.0.0.1"
+EOF
+```
 
 ---
 
