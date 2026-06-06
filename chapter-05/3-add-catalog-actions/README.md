@@ -4,8 +4,7 @@ This lab covers giving the AI assistant access to your Backstage catalog by regi
 
 ## Prerequisites
 
-- Completed Lab 2 (Chat Assistant installed)
-- Components in your catalog (from Lab 1 template)
+- Completed Lab 1 and Lab 2
 
 ## Overview
 
