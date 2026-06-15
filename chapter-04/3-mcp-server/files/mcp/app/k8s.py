@@ -41,14 +41,21 @@ def _ensure_config() -> None:
 
 
 def _pod_waiting_reasons(core: client.CoreV1Api, namespace: str, selector: str) -> list[str]:
+    # A crash-looping container cycles through waiting (CrashLoopBackOff) ->
+    # running -> terminated very quickly, so the current state alone is racy.
+    # We also read last_state so the reason is reported even when we catch the
+    # container in a brief "running" window between restarts.
     reasons: set[str] = set()
     pods = core.list_namespaced_pod(namespace, label_selector=selector)
     for pod in pods.items:
         for cs in (pod.status.container_statuses or []):
-            if cs.state and cs.state.waiting and cs.state.waiting.reason:
-                reasons.add(cs.state.waiting.reason)
-            if cs.state and cs.state.terminated and cs.state.terminated.reason:
-                reasons.add(cs.state.terminated.reason)
+            for state in (cs.state, cs.last_state):
+                if not state:
+                    continue
+                if state.waiting and state.waiting.reason:
+                    reasons.add(state.waiting.reason)
+                if state.terminated and state.terminated.reason:
+                    reasons.add(state.terminated.reason)
     return sorted(reasons)
 
 
