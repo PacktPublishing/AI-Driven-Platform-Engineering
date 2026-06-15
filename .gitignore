@@ -1,0 +1,8 @@
+# macOS
+.DS_Store
+
+# Python (lab virtualenvs and caches)
+.venv/
+__pycache__/
+*.pyc
+.fastembed_cache/

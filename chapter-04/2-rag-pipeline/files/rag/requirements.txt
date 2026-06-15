@@ -1,0 +1,8 @@
+# RAG pipeline — Chapter 4, Lab 2
+fastembed>=0.4,<0.8        # local CPU embeddings (default), no cloud creds
+psycopg[binary]>=3.1,<4    # Postgres driver
+pgvector>=0.3,<0.5         # vector type adapter for psycopg
+fastapi>=0.110,<0.116
+uvicorn[standard]>=0.27,<0.35
+boto3>=1.34                # only used when EMBEDDINGS_PROVIDER=bedrock or LLM_PROVIDER=bedrock
+anthropic>=0.39            # only used when LLM_PROVIDER=anthropic
