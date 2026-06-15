@@ -1,0 +1,27 @@
+flowchart TB
+    subgraph BUILD["Indexing — done once, ahead of time"]
+      direction LR
+      KS["1 Knowledge Sources<br/>runbooks, postmortems, blueprints"] --> IE["2 Ingestion and Embeddings<br/>chunk plus fastembed"] --> VDB["3 Vector Database<br/>Postgres plus pgvector"]
+    end
+
+    subgraph ASK["Answering — on every question"]
+      direction LR
+      U(["User question"]) --> ORC["6 Orchestration Layer<br/>FastAPI /ask"]
+      ORC -->|query| RET["4 Retriever<br/>cosine similarity"]
+      RET -->|context| LLM["5 LLM<br/>Bedrock Claude or Anthropic"]
+      LLM -->|grounded answer| ORC
+      ORC --> ANS(["Answer plus cited sources"])
+    end
+
+    RET -->|search| VDB
+    VDB -->|top chunks| RET
+
+    classDef source fill:#E3F2FD,stroke:#1565C0,color:#0D47A1;
+    classDef store fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
+    classDef brain fill:#FFF3E0,stroke:#EF6C00,color:#E65100;
+    classDef io fill:#F3E5F5,stroke:#6A1B9A,color:#4A148C;
+
+    class KS,IE source;
+    class VDB,RET store;
+    class LLM,ORC brain;
+    class U,ANS io;

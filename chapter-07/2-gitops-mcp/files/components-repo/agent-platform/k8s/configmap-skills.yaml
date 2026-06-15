@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agent-skills-fix-image-tag
+  namespace: agent-platform
+  labels:
+    app: agent-runtime
+    skill: fix-image-tag
+data:
+  SKILL.md: |
+    ---
+    name: fix-image-tag
+    description: |
+      Diagnose an ImagePullBackOff or ErrImagePull and propose a fix by opening
+      a pull request that corrects the container image tag in the Deployment
+      manifest. Use this skill when the user reports that a workload is failing
+      to pull its image, or when the user describes symptoms consistent with a
+      bad image tag (recently changed, typo, deleted upstream tag).
+    when_to_use:
+      - User reports ImagePullBackOff, ErrImagePull, or 'image not found'
+      - User mentions a deployment is stuck or pods are not starting
+      - User asks to revert an image tag to a known-working value
+    constraints:
+      - Always propose changes via a pull request. Never apply directly.
+      - Never modify resources outside the namespace the user identifies.
+      - The PR title must start with '[agent]' and follow the convention
+        '[agent] <verb> <resource> in <namespace>'.
+      - The PR body must include a one-paragraph rationale linking the symptom
+        to the root cause and citing the line that changed.
+    ---
+
+    # Fix Image Tag
+
+    ## Procedure
+
+    1. **Identify the target.** From the user's message, extract the component name (e.g. `my-first-app`), the namespace (default to the component name if not specified), and the reported symptom.
+
+    2. **Read the Deployment manifest.** Call `read_file` with `<component>/k8s/deployment.yaml`. Inspect `spec.template.spec.containers[].image`.
+
+    3. **Decide the fix.** If the image string contains an obviously invalid suffix (random characters, `bogus`, `nonexistent`, `does-not-exist`), revert to a conventional default (the user's `USER.md` records preferred defaults — `:alpine` for nginx). If you cannot identify a safe replacement, stop and ask the user.
+
+    4. **Open the pull request.** Call `open_pull_request` with branch `agent/fix-<component>-image-tag`, file_path `<component>/k8s/deployment.yaml`, the entire updated YAML as content (whole-file replace), commit_message `Fix <component> image tag`, title `[agent] fix <component> image tag in <namespace>`, body with symptom + before/after line + rationale.
+
+    5. **Persist what you learned.** If the user told you a new preference, call `save_to_memory` so future sessions inherit it.
+
+    ## Output
+
+    Return the PR URL and number to the user, plus a one-sentence summary of what changed and why. Do not poll — your work is done when the PR is open. The user merges; ArgoCD reconciles afterward.

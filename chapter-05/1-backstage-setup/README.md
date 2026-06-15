@@ -7,30 +7,20 @@ This lab covers creating a Backstage application with GitHub integration, ArgoCD
 - **Node.js 22.x** (required by `isolated-vm`, a transitive dependency of the MCP actions backend used in Lab 4)
 - **Yarn 4.x** (Backstage 0.7.x scaffolds use yarn 4 via Corepack — `corepack enable` if needed)
 - GitHub account with a Personal Access Token (PAT)
-- kubectl installed and configured
-- A Kubernetes cluster (IF you want to use Amazon EKS see [Getting Started](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)). You can also create a kind cluster for local testing.
-- Metrics Server installed on your cluster (required for HPA)
+- **A local cluster from [`00-cluster-setup`](../../00-cluster-setup/README.md)** — a kind cluster with Metrics Server (for HPA) and ArgoCD already installed.
 
-### In case you want to use kind cluster for local testing
+### Set up the cluster
 
-- Install [Docker](https://docs.docker.com/get-started/get-docker/)
-- Install [kind](https://kind.sigs.k8s.io/docs/user/quick-start/)
+If you haven't already, stand up the shared local cluster used by every chapter:
 
 ```bash
-cat <<EOF | kind create cluster --name agentic-platform --config=-
-kind: Cluster
-apiVersion: kind.x-k8s.io/v1alpha4
-nodes:
-- role: control-plane
-  extraPortMappings:
-  - containerPort: 30080
-    hostPort: 30080
-    listenAddress: "127.0.0.1"
-  - containerPort: 30443
-    hostPort: 30443
-    listenAddress: "127.0.0.1"
-EOF
+cd ../../00-cluster-setup
+./setup-cluster.sh   # kind cluster 'agentic-platform' + Metrics Server + ArgoCD
+./verify.sh          # sanity-check
+cd -
 ```
+
+This is the same cluster Chapters 4 and 6 use. Prefer Amazon EKS? See [`00-cluster-setup/README.md`](../../00-cluster-setup/README.md) — install Metrics Server and ArgoCD against your own cluster and skip the kind step. The rest of this lab is cluster-agnostic.
 
 ---
 
@@ -124,18 +114,17 @@ integrations:
 
 ---
 
-## Part 3: Install ArgoCD
+## Part 3: Configure ArgoCD
 
-> **Note:** We're installing ArgoCD manually for this tutorial. If you're using Amazon EKS, we recommend checking out the [EKS Capabilities](https://docs.aws.amazon.com/eks/latest/userguide/capabilities.html) with the managed ArgoCD feature.
+ArgoCD was already installed on your cluster by [`00-cluster-setup/setup-cluster.sh`](../../00-cluster-setup/README.md) (release `v3.0.21`, in the `argocd` namespace). This part wires it up to your GitHub repository.
 
-### Step 1: Install ArgoCD on Your Cluster
+> **Note:** If you're using Amazon EKS, you can use the managed [ArgoCD capability](https://docs.aws.amazon.com/eks/latest/userguide/capabilities.html) instead of the manual install.
+
+### Step 1: Confirm ArgoCD is running
 
 ```bash
-kubectl create namespace argocd
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v3.0.21/manifests/install.yaml
-
-# Wait for ArgoCD to be ready
-kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd
+kubectl -n argocd get deployment argocd-server
+# If this is missing, run ../../00-cluster-setup/setup-cluster.sh
 ```
 
 ### Step 2: Get Admin Password

@@ -1,0 +1,19 @@
+flowchart LR
+    HOST["AI Host<br/>Claude Desktop or Cursor"]
+    CLIENT["MCP Client"]
+    SERVER["MCP Server<br/>list_deployments tool"]
+    K8S[("Live Kubernetes<br/>cluster")]
+
+    HOST --- CLIENT
+    CLIENT -->|MCP request over stdio| SERVER
+    SERVER -->|Kubernetes API query| K8S
+    K8S -->|live deployment health| SERVER
+    SERVER -->|MCP response| CLIENT
+
+    classDef host fill:#E3F2FD,stroke:#1565C0,color:#0D47A1;
+    classDef server fill:#FFF3E0,stroke:#EF6C00,color:#E65100;
+    classDef live fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
+
+    class HOST,CLIENT host;
+    class SERVER server;
+    class K8S live;

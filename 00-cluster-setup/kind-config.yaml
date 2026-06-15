@@ -1,0 +1,28 @@
+# Local kind cluster for the whole book.
+#
+# One control-plane node with a block of NodePorts forwarded to localhost so
+# the labs can reach in-cluster services without a port-forward when they want to.
+#
+#   30080 / 30443 -> Chapter 5/6 web apps (my-first-app etc.)
+#   30900         -> Chapter 4 Postgres + pgvector (the RAG vector store)
+#   30901         -> reserved for chapter demos
+#
+# Anything reached over `kubectl port-forward` (ArgoCD, Langfuse, the agent
+# runtime) does NOT need an entry here.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 30080
+        hostPort: 30080
+        listenAddress: "127.0.0.1"
+      - containerPort: 30443
+        hostPort: 30443
+        listenAddress: "127.0.0.1"
+      - containerPort: 30900
+        hostPort: 30900
+        listenAddress: "127.0.0.1"
+      - containerPort: 30901
+        hostPort: 30901
+        listenAddress: "127.0.0.1"
