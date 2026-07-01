@@ -1,0 +1,74 @@
+graph LR
+  platform_as_a_product["Platform as a Product"]
+  cognitive_load["Developer cognitive load"]
+  dora_metrics["DORA metrics / SLO / SLI"]
+  aiops["AIOps"]
+  build_vs_buy["Build vs. buy AI platform capability"]
+  llm["Large Language Models"]
+  rag["Retrieval-Augmented Generation (RAG)"]
+  mcp["Model Context Protocol (MCP)"]
+  customization_spectrum["Prompt vs RAG vs Agents vs Fine-tune vs Train"]
+  context_architecture["Context in AI models"]
+  org_knowledge_system["Organizational knowledge systems"]
+  conversational_interface["Conversational interfaces"]
+  intent_as_abstraction["Intent as an abstraction"]
+  agentic_harness["Agentic harness"]
+  workflow_agent_spectrum["Workflow vs Agent: a spectrum of determinism"]
+  agent_three_pillars["Anatomy of an agent: memory, tools, scheduling"]
+  personal_vs_production_agents["Personal vs production agents"]
+  operation_agents_gitops["Operation agents propose via GitOps"]
+  human_in_the_loop["Human-in-the-loop control"]
+  model_guardrails["Model guardrails"]
+  identity_propagation["Identity propagation"]
+  prompt_injection["Prompt injection"]
+  memory_poisoning["Memory poisoning"]
+  compliance_as_capability["Compliance as a platform capability"]
+  forward_engineering["Forward Engineering"]
+  governance_as_module["Governance-as-a-module"]
+  context_as_module["Context-as-a-module"]
+  living_memory_graph["Living memory graph"]
+  downloadable_brains["Downloadable brains (curated context as a tradeable good)"]
+  org_up_leveled["The up-leveled organization"]
+  cognitive_load -->|relates_to| platform_as_a_product
+  platform_as_a_product -->|depends_on| dora_metrics
+  aiops -->|mitigates| cognitive_load
+  aiops -->|enables| platform_as_a_product
+  build_vs_buy -->|relates_to| aiops
+  llm -->|enables| rag
+  llm -->|relates_to| customization_spectrum
+  rag -->|depends_on| org_knowledge_system
+  mcp -->|relates_to| rag
+  context_architecture -->|enables| org_knowledge_system
+  org_knowledge_system -->|supersedes| context_as_module
+  conversational_interface -->|depends_on| intent_as_abstraction
+  conversational_interface -->|depends_on| mcp
+  conversational_interface -->|depends_on| org_knowledge_system
+  intent_as_abstraction -->|enables| forward_engineering
+  agentic_harness -->|depends_on| agent_three_pillars
+  agentic_harness -->|depends_on| mcp
+  agentic_harness -->|depends_on| model_guardrails
+  workflow_agent_spectrum -->|relates_to| agentic_harness
+  agent_three_pillars -->|introduced_in| agentic_harness
+  personal_vs_production_agents -->|relates_to| operation_agents_gitops
+  operation_agents_gitops -->|depends_on| human_in_the_loop
+  operation_agents_gitops -->|relates_to| agentic_harness
+  model_guardrails -->|relates_to| human_in_the_loop
+  identity_propagation -->|relates_to| model_guardrails
+  model_guardrails -->|mitigates| prompt_injection
+  identity_propagation -->|mitigates| prompt_injection
+  compliance_as_capability -->|depends_on| identity_propagation
+  prompt_injection -->|relates_to| operation_agents_gitops
+  memory_poisoning -->|relates_to| rag
+  memory_poisoning -->|relates_to| downloadable_brains
+  forward_engineering -->|depends_on| intent_as_abstraction
+  forward_engineering -->|enables| org_up_leveled
+  governance_as_module -->|supersedes| compliance_as_capability
+  governance_as_module -->|relates_to| model_guardrails
+  context_as_module -->|depends_on| org_knowledge_system
+  context_as_module -->|enables| living_memory_graph
+  living_memory_graph -->|depends_on| mcp
+  living_memory_graph -->|introduced_in| context_as_module
+  downloadable_brains -->|depends_on| context_as_module
+  downloadable_brains -->|caused_by| memory_poisoning
+  org_up_leveled -->|depends_on| forward_engineering
+  org_up_leveled -->|relates_to| governance_as_module

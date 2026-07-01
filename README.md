@@ -20,6 +20,7 @@ See [`00-cluster-setup/README.md`](./00-cluster-setup/README.md) for details, EK
 | [`chapter-04/`](./chapter-04/) | 4 — Driving Platform Intelligence with Organizational Knowledge | A local RAG pipeline (Postgres + pgvector) and an MCP server over platform knowledge — RAG vs MCP, hands-on |
 | [`chapter-05/`](./chapter-05/) | 5 — Building an AI-Powered Backstage Platform | Backstage + GitOps (ArgoCD), an AI chat assistant, catalog awareness, and Kubernetes actions |
 | [`chapter-07/`](./chapter-07/) | 7 — Operational Agents in Production | A production-grade agent that proposes changes through the same GitOps flow |
+| [`chapter-09/`](./chapter-09/) | 9 — Future Directions | A **living memory graph**: an MCP server over a curated, PR-extensible knowledge graph seeded with the whole book — connect a local agent and extend it over time |
 
 ## Conventions across chapters
 
