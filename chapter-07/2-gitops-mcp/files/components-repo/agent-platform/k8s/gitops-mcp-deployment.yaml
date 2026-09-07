@@ -27,7 +27,7 @@ spec:
               containerPort: 8080
           env:
             - name: GITOPS_REPO_OWNER
-              value: lusoal
+              value: YOUR_USERNAME
             - name: GITOPS_REPO_NAME
               value: backstage-components
             - name: GITOPS_DEFAULT_BRANCH

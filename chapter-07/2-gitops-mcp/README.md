@@ -7,7 +7,7 @@ By the end, asking the agent *"my-first-app is failing with ImagePullBackOff, fi
 ## Prerequisites
 
 - Lab 1 completed (agent-runtime running in `agent-platform`, identity files mounted, MEMORY.md persisting).
-- The chapter-05 ApplicationSet still active and pointed at `lusoal/backstage-components`.
+- The chapter-05 ApplicationSet still active and pointed at `YOUR_USERNAME/backstage-components`.
 
 ## Architecture
 
@@ -77,12 +77,17 @@ Copy the new and updated manifests from this lab into your local clone of `backs
 
 ```bash
 # Replace COMPONENTS_REPO with the absolute path to your local clone of
-# lusoal/backstage-components (or wherever you keep it).
+# YOUR_USERNAME/backstage-components (or wherever you keep it).
 COMPONENTS_REPO=~/work/backstage-components
 
 cp files/components-repo/agent-platform/k8s/*.yaml \
    "$COMPONENTS_REPO/agent-platform/k8s/"
 
+# Change to your GitHub Username
+export YOUR_USERNAME="ADD_HERE_YOUR_GITHUB_USERNAME"
+sed -i '' "s/YOUR_USERNAME/${YOUR_USERNAME}/g" \
+  "$COMPONENTS_REPO/agent-platform/k8s/gitops-mcp-deployment.yaml"
+  
 cd "$COMPONENTS_REPO"
 git checkout -b chapter-07/lab-2
 git add agent-platform/
@@ -169,7 +174,7 @@ gh pr create --fill && gh pr merge --merge --delete-branch
 
 Wait ~3 minutes for ArgoCD to apply the bad image. Watch with:
 ```bash
-kubectl -n default get pods -l app=my-first-app -w
+kubectl -n my-first-app get pods -l app=my-first-app -w
 # A new pod appears in ErrImagePull / ImagePullBackOff. Ctrl-C when you see it.
 ```
 
@@ -185,7 +190,7 @@ curl -sS -X POST http://localhost:18080/invoke \
   }'
 ```
 
-Expected: response references a new PR opened against `lusoal/backstage-components`, with title `[agent] fix my-first-app image tag in default` and a body that explains the symptom, the change, and the rationale.
+Expected: response references a new PR opened against `YOUR_USERNAME/backstage-components`, with title `[agent] fix my-first-app image tag in default` and a body that explains the symptom, the change, and the rationale.
 
 Open the PR in GitHub, review, merge. Within ~3 minutes ArgoCD reconciles and `my-first-app` returns to `Running 2/2`.
 
