@@ -3,7 +3,7 @@
 # Stand up the local cluster the whole book runs on:
 #   - a kind cluster named "agentic-platform"
 #   - the Kubernetes Metrics Server (needed for HPA in Chapter 5)
-#   - ArgoCD (needed for the GitOps flow in Chapters 5 and 6)
+#   - ArgoCD (needed for the GitOps flow in Chapters 5 and 7)
 #
 # Safe to re-run: every step checks for existing state before acting.
 #
