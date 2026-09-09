@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1130" height="760" viewBox="0 0 1130 760" font-family="Helvetica,Arial,sans-serif">
+<rect width="1130" height="760" fill="#ffffff"/>
+<defs><marker id="a_solid" markerWidth="8" markerHeight="8" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#475569"/></marker><marker id="a_dash" markerWidth="8" markerHeight="8" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#94A3B8"/></marker></defs>
+<text x="44" y="46" fill="#111827" font-size="24" font-weight="700">Continuous Modernization</text>
+<text x="44" y="72" fill="#6B7280" font-size="14">A vended standard operating procedure, reconciled against a repository the way an Operator reconciles a cluster</text>
+<path d="M258,183 C292,183 286,183 320,183" fill="none" stroke="#94A3B8" stroke-width="1.8" stroke-opacity="0.85" stroke-dasharray="5 5" marker-end="url(#a_dash)"/>
+<path d="M427,216 C427,250 427,258 427,292" fill="none" stroke="#475569" stroke-width="1.8" stroke-opacity="0.85" marker-end="url(#a_solid)"/>
+<text x="436" y="258" fill="#6B7280" font-size="11" font-style="italic" text-anchor="start">desired</text>
+<path d="M258,325 C292,325 286,325 320,325" fill="none" stroke="#475569" stroke-width="1.8" stroke-opacity="0.85" marker-end="url(#a_solid)"/>
+<text x="289" y="317" fill="#6B7280" font-size="11" font-style="italic" text-anchor="middle">actual</text>
+<path d="M534,325 C568,325 562,325 596,325" fill="none" stroke="#475569" stroke-width="1.8" stroke-opacity="0.85" marker-end="url(#a_solid)"/>
+<text x="565" y="317" fill="#6B7280" font-size="11" font-style="italic" text-anchor="middle">findings</text>
+<path d="M810,325 C844,325 838,325 872,325" fill="none" stroke="#475569" stroke-width="1.8" stroke-opacity="0.85" marker-end="url(#a_solid)"/>
+<text x="841" y="317" fill="#6B7280" font-size="11" font-style="italic" text-anchor="middle">yes</text>
+<path d="M703,358 C703,392 703,400 703,434" fill="none" stroke="#475569" stroke-width="1.8" stroke-opacity="0.85" marker-end="url(#a_solid)"/>
+<text x="712" y="400" fill="#6B7280" font-size="11" font-style="italic" text-anchor="start">no</text>
+<path d="M810,467 C810,407 872,385 872,325" fill="none" stroke="#475569" stroke-width="1.8" stroke-opacity="0.85" marker-end="url(#a_solid)"/>
+<path d="M979,358 C979,392 979,400 979,434" fill="none" stroke="#475569" stroke-width="1.8" stroke-opacity="0.85" marker-end="url(#a_solid)"/>
+<path d="M979,500 C979,534 979,542 979,576" fill="none" stroke="#475569" stroke-width="1.8" stroke-opacity="0.85" marker-end="url(#a_solid)"/>
+<path d="M872,609 C730,609 676,609 534,609" fill="none" stroke="#475569" stroke-width="1.8" stroke-opacity="0.85" marker-end="url(#a_solid)"/>
+<path d="M427,576 C311,576 267,358 151,358" fill="none" stroke="#475569" stroke-width="1.8" stroke-opacity="0.85" marker-end="url(#a_solid)"/>
+<text x="289" y="459" fill="#6B7280" font-size="11" font-style="italic" text-anchor="middle">the estate has moved</text>
+<path d="M534,609 C583,609 583,183 534,183" fill="none" stroke="#94A3B8" stroke-width="1.8" stroke-opacity="0.85" stroke-dasharray="5 5" marker-end="url(#a_dash)"/>
+<text x="520" y="396" fill="#6B7280" font-size="11" font-style="italic" text-anchor="end">what the loop learned</text>
+<rect x="44" y="150" width="214" height="66" rx="8" fill="#ffffff" stroke="#E5E7EB" stroke-width="1.2"/>
+<rect x="44" y="150" width="5" height="66" rx="2.5" fill="#1B9E9E"/>
+<text x="58" y="170" fill="#111827" font-size="12.5" font-weight="600">Benchmark the skill</text>
+<text x="58" y="185" fill="#4B5563" font-size="11.5">LLM-as-a-judge gates every change</text>
+<text x="58" y="207" fill="#1B9E9E" font-size="10" font-weight="700" letter-spacing="0.5">VERIFICATION</text>
+<rect x="320" y="150" width="214" height="66" rx="8" fill="#ffffff" stroke="#E5E7EB" stroke-width="1.2"/>
+<rect x="320" y="150" width="5" height="66" rx="2.5" fill="#3B6EA5"/>
+<text x="334" y="170" fill="#111827" font-size="12.5" font-weight="600">SKILL.md</text>
+<text x="334" y="185" fill="#4B5563" font-size="11.5">the standard, written down</text>
+<text x="334" y="207" fill="#3B6EA5" font-size="10" font-weight="700" letter-spacing="0.5">DESIRED STATE</text>
+<rect x="44" y="292" width="214" height="66" rx="8" fill="#ffffff" stroke="#E5E7EB" stroke-width="1.2"/>
+<rect x="44" y="292" width="5" height="66" rx="2.5" fill="#2E8B57"/>
+<text x="58" y="312" fill="#111827" font-size="12.5" font-weight="600">The repository</text>
+<text x="58" y="327" fill="#4B5563" font-size="11.5">what is actually running</text>
+<text x="58" y="349" fill="#2E8B57" font-size="10" font-weight="700" letter-spacing="0.5">ACTUAL STATE</text>
+<rect x="320" y="292" width="214" height="66" rx="8" fill="#ffffff" stroke="#E5E7EB" stroke-width="1.2"/>
+<rect x="320" y="292" width="5" height="66" rx="2.5" fill="#E08214"/>
+<text x="334" y="312" fill="#111827" font-size="12.5" font-weight="600">Analysis</text>
+<text x="334" y="327" fill="#4B5563" font-size="11.5">the findings you chose to look for</text>
+<text x="334" y="349" fill="#E08214" font-size="10" font-weight="700" letter-spacing="0.5">CONTROL</text>
+<rect x="596" y="292" width="214" height="66" rx="8" fill="#ffffff" stroke="#E5E7EB" stroke-width="1.2"/>
+<rect x="596" y="292" width="5" height="66" rx="2.5" fill="#E08214"/>
+<text x="610" y="312" fill="#111827" font-size="12.5" font-weight="600">Does the target platform exist,</text>
+<text x="610" y="327" fill="#4B5563" font-size="11.5">and is somebody operating it?</text>
+<text x="610" y="349" fill="#E08214" font-size="10" font-weight="700" letter-spacing="0.5">CONTROL</text>
+<rect x="872" y="292" width="214" height="66" rx="8" fill="#ffffff" stroke="#E5E7EB" stroke-width="1.2"/>
+<rect x="872" y="292" width="5" height="66" rx="2.5" fill="#8E44AD"/>
+<text x="886" y="312" fill="#111827" font-size="12.5" font-weight="600">Agent applies the procedure</text>
+<text x="886" y="327" fill="#4B5563" font-size="11.5">code and infrastructure diff</text>
+<text x="886" y="349" fill="#8E44AD" font-size="10" font-weight="700" letter-spacing="0.5">AGENT STEP</text>
+<rect x="596" y="434" width="214" height="66" rx="8" fill="#ffffff" stroke="#E5E7EB" stroke-width="1.2"/>
+<rect x="596" y="434" width="5" height="66" rx="2.5" fill="#E08214"/>
+<text x="610" y="454" fill="#111827" font-size="12.5" font-weight="600">Platform team builds</text>
+<text x="610" y="469" fill="#4B5563" font-size="11.5">and operates the target</text>
+<text x="610" y="491" fill="#E08214" font-size="10" font-weight="700" letter-spacing="0.5">CONTROL</text>
+<rect x="872" y="434" width="214" height="66" rx="8" fill="#ffffff" stroke="#E5E7EB" stroke-width="1.2"/>
+<rect x="872" y="434" width="5" height="66" rx="2.5" fill="#E08214"/>
+<text x="886" y="454" fill="#111827" font-size="12.5" font-weight="600">Policy gate</text>
+<text x="886" y="469" fill="#4B5563" font-size="11.5">and human review</text>
+<text x="886" y="491" fill="#E08214" font-size="10" font-weight="700" letter-spacing="0.5">CONTROL</text>
+<rect x="872" y="576" width="214" height="66" rx="8" fill="#ffffff" stroke="#E5E7EB" stroke-width="1.2"/>
+<rect x="872" y="576" width="5" height="66" rx="2.5" fill="#2E8B57"/>
+<text x="886" y="602" fill="#111827" font-size="12.5" font-weight="600">Merge and deploy</text>
+<text x="886" y="633" fill="#2E8B57" font-size="10" font-weight="700" letter-spacing="0.5">ACTUAL STATE</text>
+<rect x="320" y="576" width="214" height="66" rx="8" fill="#ffffff" stroke="#E5E7EB" stroke-width="1.2"/>
+<rect x="320" y="576" width="5" height="66" rx="2.5" fill="#1B9E9E"/>
+<text x="334" y="596" fill="#111827" font-size="12.5" font-weight="600">Re-analyze</text>
+<text x="334" y="611" fill="#4B5563" font-size="11.5">a measurement, not an assertion</text>
+<text x="334" y="633" fill="#1B9E9E" font-size="10" font-weight="700" letter-spacing="0.5">VERIFICATION</text>
+<text x="44" y="686" fill="#6B7280" font-size="11" font-weight="700">WHAT EACH BOX IS</text>
+<rect x="44" y="694" width="14" height="14" rx="3" fill="#3B6EA5"/>
+<text x="64" y="705" fill="#374151" font-size="11">desired state</text>
+<rect x="212" y="694" width="14" height="14" rx="3" fill="#2E8B57"/>
+<text x="232" y="705" fill="#374151" font-size="11">actual state</text>
+<rect x="380" y="694" width="14" height="14" rx="3" fill="#E08214"/>
+<text x="400" y="705" fill="#374151" font-size="11">control</text>
+<rect x="548" y="694" width="14" height="14" rx="3" fill="#8E44AD"/>
+<text x="568" y="705" fill="#374151" font-size="11">agent step</text>
+<rect x="716" y="694" width="14" height="14" rx="3" fill="#1B9E9E"/>
+<text x="736" y="705" fill="#374151" font-size="11">verification</text>
+<line x1="44" y1="728" x2="70" y2="728" stroke="#94A3B8" stroke-width="1.8" stroke-dasharray="5 5" marker-end="url(#a_dash)"/>
+<text x="78" y="732" fill="#374151" font-size="11">feedback — what the loop teaches the standard</text>
+</svg>

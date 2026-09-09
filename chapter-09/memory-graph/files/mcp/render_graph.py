@@ -5,7 +5,7 @@ graph *through the protocol* (graph_stats + the memory://graph resource), then w
 Mermaid diagram and a print-ready SVG (light theme, edge labels, crossing reduction). No
 third-party rendering deps.
 
-    python render_graph.py           # writes figures/figure-9-1-living-memory-graph.{mmd,svg}
+    python render_graph.py           # writes figures/figure-9-2-living-memory-graph.{mmd,svg}
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ from mcp.client.stdio import stdio_client
 
 SERVER = StdioServerParameters(command="python", args=["-m", "app.server"])
 OUT = Path(__file__).resolve().parent.parent.parent / "figures"
-STEM = "figure-9-1-living-memory-graph"
+STEM = "figure-9-2-living-memory-graph"
 
 # Print-friendly accent colors (readable on white, distinguishable in grayscale by label too).
 TYPE_COLOR = {
