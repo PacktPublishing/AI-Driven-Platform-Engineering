@@ -4,7 +4,7 @@ This lab covers creating a Backstage application with GitHub integration, ArgoCD
 
 ## Prerequisites
 
-- **Node.js 22.x** (required by `isolated-vm`, a transitive dependency of the MCP actions backend used in Lab 4)
+- **Node.js 22.x** (required by `isolated-vm`, a transitive dependency of the scaffolder backend)
 - **Yarn 4.x** (Backstage 0.7.x scaffolds use yarn 4 via Corepack — `corepack enable` if needed)
 - GitHub account with a Personal Access Token (PAT)
 - **A local cluster from [`00-cluster-setup`](../../00-cluster-setup/README.md)** — a kind cluster with Metrics Server (for HPA) and ArgoCD already installed.
@@ -20,7 +20,7 @@ cd ../../00-cluster-setup
 cd -
 ```
 
-This is the same cluster Chapters 4 and 6 use. Prefer Amazon EKS? See [`00-cluster-setup/README.md`](../../00-cluster-setup/README.md) — install Metrics Server and ArgoCD against your own cluster and skip the kind step. The rest of this lab is cluster-agnostic.
+This is the same cluster Chapters 4 and 7 use. Prefer Amazon EKS? See [`00-cluster-setup/README.md`](../../00-cluster-setup/README.md) — install Metrics Server and ArgoCD against your own cluster and skip the kind step. The rest of this lab is cluster-agnostic.
 
 ---
 

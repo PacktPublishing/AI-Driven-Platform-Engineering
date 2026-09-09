@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Sanity-check the local environment before starting a chapter's labs.
-# This is the runnable version of the Chapter 6 "Lab 0 / Prerequisites" checks.
+# This is the runnable version of the Chapter 7 "Lab 0 / Prerequisites" checks.
 # It deploys nothing — it only reads state and reports pass/fail.
 #
 # Usage:

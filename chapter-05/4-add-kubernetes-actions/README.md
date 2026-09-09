@@ -154,6 +154,88 @@ Open the AI Assistant (`http://localhost:3000/assistant/general`) and try:
 
 ---
 
+## Step 8 (optional): Call the same actions from an MCP client
+
+Everything so far has gone through the chat assistant, which reaches these actions in process. The
+same registrations are also published as MCP tools over HTTP, and this step calls them from outside
+Backstage. Nothing in the earlier steps depends on this, so treat it as optional.
+
+### Grant an external client a token
+
+External callers need credentials. Add a static token to `app-config.local.yaml`:
+
+```yaml
+backend:
+  auth:
+    externalAccess:
+      - type: static
+        options:
+          token: ${MCP_CLIENT_TOKEN}
+          subject: mcp-client
+```
+
+Generate one and restart the backend:
+
+```bash
+export MCP_CLIENT_TOKEN=$(node -e "console.log(require('crypto').randomBytes(24).toString('base64'))")
+yarn workspace backend start
+```
+
+### Talk to the endpoint
+
+The plugin serves MCP at `/api/mcp-actions/v1` using the streamable HTTP transport. Open the
+session:
+
+```bash
+curl -s -X POST http://localhost:7007/api/mcp-actions/v1 \
+  -H "Authorization: Bearer $MCP_CLIENT_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{
+        "protocolVersion":"2025-06-18","capabilities":{},
+        "clientInfo":{"name":"my-client","version":"1.0"}}}'
+```
+
+The server identifies itself, and the version it reports is the plugin version you pinned:
+
+```
+{"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{}},
+ "serverInfo":{"name":"backstage","version":"0.1.9"}},"jsonrpc":"2.0","id":1}
+```
+
+List what it publishes with `"method":"tools/list"`, then call one:
+
+```bash
+curl -s -X POST http://localhost:7007/api/mcp-actions/v1 \
+  -H "Authorization: Bearer $MCP_CLIENT_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{
+        "name":"kubectl_get_pods","arguments":{"namespace":"argocd"}}}'
+```
+
+The reply carries the kubectl output under a `result` key, which is the output schema the action
+declared in Step 2. That is why the action returns `{ output: { result } }` rather than a bare
+string: the registry validates the return value against that schema.
+
+Responses arrive as server-sent events, so each JSON payload is prefixed with `data: `. Strip that
+prefix before parsing.
+
+### What this shows, and one warning
+
+The assistant and the MCP client end up at the same registered actions by different routes. The
+assistant is bound to a named list in `app-config.yaml`; the MCP endpoint publishes what the
+registry holds.
+
+Those two surfaces are not the same size, and this is the part worth pausing on. Our agent is bound
+to seven read-only actions. Running `tools/list` against the endpoint on this setup returns
+thirteen tools, including `register-entity` and `unregister-entity`, which mutate the catalog.
+Opening this endpoint therefore exposes more than the assistant can reach, so treat the token as a
+credential with real scope: keep it out of version control, give it to one client, and review what
+`tools/list` returns before you hand it to anyone.
+
+---
+
 ## Troubleshooting
 
 ### "kubectl not found"

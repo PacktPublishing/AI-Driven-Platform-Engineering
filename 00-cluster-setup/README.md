@@ -10,7 +10,7 @@ Every chapter in this book runs against **one local Kubernetes cluster** you cre
 |---|---|
 | **kind cluster** `agentic-platform` | The substrate everything deploys onto |
 | **Metrics Server** | Required by the HPA in the Chapter 5 web-app template |
-| **ArgoCD** (`v3.0.21`) | The GitOps deploy channel used in Chapters 5 and 6 |
+| **ArgoCD** (`v3.0.21`) | The GitOps deploy channel used in Chapters 5 and 7 |
 | **NodePorts** 30080/30443/30900/30901 | Forwarded to `localhost` for the chapter demos |
 
 ## Prerequisites
@@ -50,7 +50,7 @@ Reports pass/fail for the cluster, Metrics Server, ArgoCD, the `host.docker.inte
 GITHUB_USERNAME=your-username GITHUB_TOKEN=github_pat_... ./verify.sh
 ```
 
-## After setup: ArgoCD (Chapters 5 & 6)
+## After setup: ArgoCD (Chapters 5 & 7)
 
 Get the admin password:
 
