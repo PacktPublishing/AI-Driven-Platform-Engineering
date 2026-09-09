@@ -93,12 +93,18 @@ COMPONENTS_REPO=~/work/backstage-components   # adjust to your path
 mkdir -p "$COMPONENTS_REPO/langfuse"
 cp -r files/components-repo/langfuse/* "$COMPONENTS_REPO/langfuse/"
 
-# 2) Updated agent deployment (image bump + new env vars + new volume mount)
-#    plus the new audit PVC
+# Change to your GitHub Username
+export YOUR_USERNAME="ADD_HERE_YOUR_GITHUB_USERNAME"
+sed -i '' "s/YOUR_USERNAME/${YOUR_USERNAME}/g" \
+  "$COMPONENTS_REPO/langfuse/argocd/application.yaml"
+```
+Updated agent deployment:
+```bash
 cp files/components-repo/agent-platform/k8s/deployment.yaml \
    "$COMPONENTS_REPO/agent-platform/k8s/deployment.yaml"
 cp files/components-repo/agent-platform/k8s/pvc-audit.yaml \
    "$COMPONENTS_REPO/agent-platform/k8s/pvc-audit.yaml"
+
 
 cd "$COMPONENTS_REPO"
 git checkout -b chapter-07/lab-4

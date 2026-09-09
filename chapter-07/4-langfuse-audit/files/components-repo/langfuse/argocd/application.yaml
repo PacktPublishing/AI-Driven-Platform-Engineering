@@ -9,7 +9,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/lusoal/backstage-components
+    repoURL: https://github.com/YOUR_USERNAME/backstage-components
     targetRevision: HEAD
     path: langfuse/k8s
   destination:

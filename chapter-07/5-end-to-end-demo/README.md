@@ -35,7 +35,7 @@ kubectl -n langfuse get pods
 # Expect: langfuse ... 1/1 Running   langfuse-postgres ... 1/1 Running
 
 echo "=== my-first-app pods ==="
-kubectl -n default get pods -l app=my-first-app
+kubectl -n my-first-app get pods -l app=my-first-app
 # Expect: 2 pods, both 1/1 Running on image nginx:alpine
 
 echo "=== Backstage backend ==="
@@ -71,7 +71,7 @@ gh pr create --fill && gh pr merge --merge --delete-branch
 ArgoCD's ApplicationSet polls every ~3 minutes, so the bad image will be applied within that window. Watch:
 
 ```bash
-kubectl -n default get pods -l app=my-first-app -w
+kubectl -n my-first-app get pods -l app=my-first-app -w
 ```
 
 A new pod appears with `STATUS=ErrImagePull` (it will cycle through `ImagePullBackOff` too). The two old pods stay `Running` until the new one becomes Ready, which it never will. The deployment is stuck. Press Ctrl-C when you've seen the failure.
@@ -151,7 +151,7 @@ gh pr merge <N> --repo <your>/backstage-components --merge --delete-branch
 ArgoCD's ApplicationSet polls again within ~3 minutes. Watch the recovery:
 
 ```bash
-kubectl -n default get pods -l app=my-first-app -w
+kubectl -n my-first-app get pods -l app=my-first-app -w
 # The bad pod is replaced; the new pod pulls nginx:alpine and goes Running.
 # Two pods 1/1 Running. Ctrl-C.
 ```
@@ -215,5 +215,5 @@ Each takes about as long as the basic flow above and exercises a different piece
 ## Where to go from here
 
 - **Chapter 7 narrative:** the *Building It* section can now point readers at concrete artifacts (this lab) instead of abstractions.
-- **Lab 6 (bonus):** add a Backstage scaffolder template `add-skill` that lets domain teams contribute a new skill without touching the agent's code. The template ends with a PR to `lusoal/backstage-components` adding a new ConfigMap-mounted SKILL.md, plus an updated agent deployment that mounts it. That makes Stage-1-3 (deterministic templates) and Stage-4 (autonomous agent) coexist on the same Backstage portal — the *Workflow vs Agent* spectrum, materialized as two columns of the same sidebar.
+- **Lab 6 (bonus):** add a Backstage scaffolder template `add-skill` that lets domain teams contribute a new skill without touching the agent's code. The template ends with a PR to `YOUR_USERNAME/backstage-components` adding a new ConfigMap-mounted SKILL.md, plus an updated agent deployment that mounts it. That makes Stage-1-3 (deterministic templates) and Stage-4 (autonomous agent) coexist on the same Backstage portal — the *Workflow vs Agent* spectrum, materialized as two columns of the same sidebar.
 - **Going to production** (chapter table): every component in this demo has a managed substitute. The architecture stays; the operational substrate moves up. Useful exercise: pick one row (e.g., the audit log) and migrate it (e.g., to S3 with Object Lock in a separate AWS account) to feel the difference.

@@ -59,7 +59,7 @@ Real streaming (token-by-token) is left as an exercise; this single-shot adapter
 
 ## Step 2: Register the module in the backend
 
-Edit `packages/backend/src/index.ts` and add the import line below your other module registrations:
+Edit `$BACKSTAGE_APP/packages/backend/src/index.ts` and add the import line below your other module registrations:
 
 ```typescript
 // Strands proxy agent (chapter-07 lab 3)
@@ -108,7 +108,7 @@ The `prompt:` on `platform-ops` is essentially ignored — the system prompt tha
 
 ## Step 4: Add a sidebar item
 
-Edit `packages/app/src/components/Root/Root.tsx` and add a `<SidebarItem>` for the new agent next to the existing one:
+Edit `$BACKSTAGE_APP/packages/app/src/components/Root/Root.tsx` and add a `<SidebarItem>` for the new agent next to the existing one:
 
 ```tsx
 import { ChatIcon, /* existing imports */ } from '@backstage/core-components';
@@ -157,7 +157,7 @@ Ask:
 
 > *my-first-app is failing with ImagePullBackOff. The deployment lives at my-first-app/k8s/deployment.yaml in the GitOps repo. Diagnose and open a PR to fix it.*
 
-The response will reference a new pull request opened against `lusoal/backstage-components` — the same flow you ran via `curl` in Lab 2, now triggered from a chat UI a non-engineer could use.
+The response will reference a new pull request opened against `YOUR_USERNAME/backstage-components` — the same flow you ran via `curl` in Lab 2, now triggered from a chat UI a non-engineer could use.
 
 ## Why this matters for the chapter
 
