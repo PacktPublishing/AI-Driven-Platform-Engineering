@@ -221,6 +221,55 @@ string: the registry validates the return value against that schema.
 Responses arrive as server-sent events, so each JSON payload is prefixed with `data: `. Strip that
 prefix before parsing.
 
+### Point a real client at it
+
+Raw JSON-RPC proves the endpoint works, but it is not how anyone would use it day to day. Any
+MCP-native client can consume this server, and the wiring is the same shape in all of them: a URL,
+a transport, and an auth header. We will use Claude Code below purely because it is quick to
+demonstrate. Nothing in this lab depends on that choice, so substitute whichever client you already
+run.
+
+Most clients read a JSON config file. In Claude Code's case that is `.mcp.json`, in the root of
+whatever project you want to use it from:
+
+```json
+{
+  "mcpServers": {
+    "backstage": {
+      "type": "http",
+      "url": "http://localhost:7007/api/mcp-actions/v1",
+      "headers": {
+        "Authorization": "Bearer ${MCP_CLIENT_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+The `${MCP_CLIENT_TOKEN}` reference is expanded from your environment when the client starts, so the
+token never lands in the file and never reaches version control. Export it in the shell you launch
+from, using the same variable you set earlier in this step.
+
+A project-scoped server is approved once on first use: start the client in that directory and accept
+the prompt. If you would rather register it just for yourself and skip the approval, Claude Code
+also takes it from the command line:
+
+```bash
+claude mcp add --transport http backstage http://localhost:7007/api/mcp-actions/v1 \
+  --header "Authorization: Bearer $MCP_CLIENT_TOKEN"
+```
+
+Either way, listing the configured servers should show it connected:
+
+```
+backstage: http://localhost:7007/api/mcp-actions/v1 (HTTP) - Connected
+```
+
+From there the actions are ordinary tools. Ask the client something that needs the cluster, such as
+which pods are running in the argocd namespace, and it will call `kubectl_get_pods` and answer from
+live state. The registration you wrote in Step 2 is now serving a client that has never heard of
+Backstage, which is the whole point of the second door.
+
 ### What this shows, and one warning
 
 The assistant and the MCP client end up at the same registered actions by different routes. The
