@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent-runtime
+  namespace: agent-platform
+  labels:
+    app: agent-runtime
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: agent-runtime
+  template:
+    metadata:
+      labels:
+        app: agent-runtime
+    spec:
+      serviceAccountName: agent-runtime
+      containers:
+      - name: agent
+        image: agent-runtime:0.7.2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8080
+        env:
+        - name: LLM_PROVIDER
+          value: bedrock
+        - name: BEDROCK_MODEL_ID
+          value: us.anthropic.claude-sonnet-4-5-20250929-v1:0
+        - name: MCP_CLUSTER_URL
+          value: http://cluster-mcp.agent-platform.svc.cluster.local:8080
+        envFrom:
+        - secretRef:
+            name: agent-llm-credentials
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          initialDelaySeconds: 15
+          periodSeconds: 30
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+      automountServiceAccountToken: false

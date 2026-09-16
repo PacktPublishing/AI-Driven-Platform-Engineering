@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cluster-mcp
+  namespace: agent-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cluster-mcp
+  template:
+    metadata:
+      labels:
+        app: cluster-mcp
+    spec:
+      serviceAccountName: cluster-mcp
+      containers:
+      - name: cluster-mcp
+        image: quay.io/containers/kubernetes_mcp_server:v0.0.66
+        imagePullPolicy: IfNotPresent
+        args:
+        - --port
+        - "8080"
+        - --read-only
+        - --stateless
+        - --toolsets
+        - core
+        - --disable-multi-cluster
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          periodSeconds: 5
+          timeoutSeconds: 2

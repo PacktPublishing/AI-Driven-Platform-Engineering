@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitops-mcp
+  namespace: agent-platform
+  labels:
+    app: gitops-mcp
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: gitops-mcp
+  template:
+    metadata:
+      labels:
+        app: gitops-mcp
+    spec:
+      containers:
+        - name: gitops-mcp
+          image: ghcr.io/github/github-mcp-server:v1.12.1
+          imagePullPolicy: IfNotPresent
+          args: ["http", "--port", "8080"]
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: GITHUB_TOOLS
+              value: get_file_contents,create_branch,create_or_update_file,create_pull_request
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi

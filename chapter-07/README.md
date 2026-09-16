@@ -1,58 +1,28 @@
-# Chapter 7: Operational Agents in Production
+# Chapter 7: Operational Agents and Collaboration
 
-This chapter takes the read-only chat assistant from Chapter 5 across the boundary it stopped at: **action**. The agent moves out of Backstage, becomes a service of its own, and proposes changes through the same GitOps flow your platform already uses.
+Build a separate agent runtime, add collaborating specialists, then connect them to the existing Chapter 5 Backstage Chat Assistant in Lab 4. The chat UI and route stay the same. Three agents diagnose application problems and propose repairs through GitOps:
 
-The labs build a minimum production-grade agent end-to-end:
+- **Platform Coordinator** understands the request, delegates work, and explains the result.
+- **Cluster Diagnostics Agent** reads live Kubernetes state to investigate the problem.
+- **GitOps Change Agent** reads the application manifest and proposes an image-change PR.
 
-| Lab | What you build | Chapter section |
-|---|---|---|
-| **0 — Prerequisites** | Verify the Chapter 5 stack is alive (kind cluster, Backstage, ArgoCD, ApplicationSet, components repo) | — |
-| **1 — Strands runtime** | A FastAPI service wrapping a Strands `Agent`, with file-based identity (`SOUL.md`, `IDENTITY.md`, `USER.md`, `MEMORY.md`) — deployed *through* the ArgoCD ApplicationSet you set up in Chapter 5 | *A Strands Agent as a Service* + *Memory in two layers* |
-| **2 — GitOps MCP + skill + hook** | One MCP server: clones the components repo, edits a YAML, opens a PR. Plus one skill (`fix-image-tag`) and one Strands hook (`AlwaysPRHook`) | *Domain-Scoped MCP Servers* + *Skills as Procedural Knowledge* + *Governed Writes via Hooks* |
-| **3 — Backstage strands-proxy module** | Backstage backend module that registers `strands-proxy` as a new agent type with the Chapter 5 GenAI plugin, so the chat sidebar can talk to the agent over HTTP | *Where We Are Going* (Figure 6.3) |
-| **4 — Langfuse + audit log** | Local Langfuse (in-cluster) collecting traces from the agent via the Langfuse Python SDK, plus a hash-chained append-only audit log on a PVC | *Observability and Audit* |
-| **5 — End-to-end demo walk-through** | Drive the full loop with everything live: break `my-first-app`, ask the Platform Agent to fix it from the Backstage chat, watch the PR open, merge, see the trace in Langfuse, verify the audit chain | — |
+The agents share a runtime, with separate prompts and tools. The coordinator manages the handoffs; MCP servers provide access to platform tools. Lab 2 runs the [Kubernetes MCP server](https://github.com/containers/kubernetes-mcp-server) directly in read-only mode. Lab 3 connects the GitOps specialist directly to [GitHub’s official MCP server](https://github.com/github/github-mcp-server).
 
-## What we deliberately keep out
+All workload changes follow **Git branch → PR → human review and merge → ArgoCD**. Cluster access is read-only. A PR hook checks proposal conventions, while Langfuse traces and audit records make the agents’ work visible. After deployment, a follow-up request verifies recovery.
 
-The chapter argues that production agents need four MCPs (catalog, gitops, cluster-ops, observability), self-invocation via an event bus, and identity propagation across hops. The labs build only what's needed to demonstrate the loop end-to-end:
+## Labs
 
-- **One MCP, not four.** `gitops-mcp` is the bridge from observation to action, and the chapter says so explicitly. The other three are conceptual extensions of the same pattern; the architecture in Lab 2 makes adding them mechanical.
-- **No self-invocation.** The agent runs synchronously from an HTTP request. The cron-triggered loop with `agent_action` filtering is documented in the chapter and left as an extension exercise.
-- **Identity propagation is single-tenant.** The agent runs under one ServiceAccount with one GitHub PAT. Multi-tenant identity propagation (OIDC token exchange, `AssumeRoleWithWebIdentity`) is covered in Chapter 9.
+Reuse the Chapter 5 kind cluster, Backstage app, components repository, and ArgoCD setup. The example application is `my-first-app` in namespace `my-first-app`.
 
-What does land in the labs covers every concept the chapter promises end-to-end at least once.
+| Lab | Focus |
+| --- | --- |
+| [0 — Prerequisites](0-prereqs/README.md) | Check the platform and repository settings |
+| [1 — Runtime](1-strands-runtime/README.md) | Deploy the Strands agent service |
+| [2 — Diagnostics](2-cluster-diagnostics/README.md) | Add the cluster diagnostics specialist |
+| [3 — GitOps and collaboration](3-gitops-mcp/README.md) | Connect the agents and propose repair PRs |
+| [4 — Backstage chat](4-backstage-collaboration/README.md) | Connect the existing Chat Assistant |
+| [5 — Observability](5-langfuse-audit/README.md) | Inspect traces and audit records |
 
-## What we reuse from Chapter 5
+Chapter 7 focuses on collaboration using shared service credentials. Chapter 8 adds mandatory guardrails, an approved MCP catalog, OPA authorization, verified user identity, and tenant isolation.
 
-The `ApplicationSet` you applied in [chapter-05/1-backstage-setup](../chapter-05/1-backstage-setup/files/argocd-applicationset.yaml) auto-discovers any folder in your `backstage-components` repo with `*/argocd/application.yaml`. **That's the deploy channel for everything in this chapter.** You will not run `kubectl apply` directly. Every component lands in the cluster the same way `my-first-app` did: PR → merge → ArgoCD.
-
-There's a recursive moment worth noticing as you go through the labs: *the platform you built in Chapter 5 is what deploys the agent that consumes it in Chapter 7.* That is the chapter's thesis made literal.
-
-## Defaults
-
-- **Cluster:** kind (works offline; matches the chapter's "from kind cluster bootstrap")
-- **LLM provider:** Amazon Bedrock with Claude Sonnet 4.5 by default; Anthropic API direct documented as a fallback for readers without AWS access
-- **Backstage:** stays on the host (`yarn start`, as in Chapter 5). The agent reaches it via `host.docker.internal`
-- **GitHub:** the same `backstage-components` repo and PAT you set up in [chapter-05/1-backstage-setup](../chapter-05/1-backstage-setup/README.md)
-
-Override any of these via environment variables documented in each lab's README.
-
-## Terminals you'll keep open
-
-By Lab 4 you have several long-running things on different terminals. Plan for at least three:
-
-| Terminal | What runs there | When |
-|---|---|---|
-| 1 | `yarn start` for the Backstage app on the host (Chapter 5) | Always — Lab 3 onwards needs the chat UI |
-| 2 | `kubectl -n agent-platform port-forward svc/agent-runtime 18080:80` | Lab 1 onwards (Backstage backend hits this in Lab 3) |
-| 3 | `kubectl -n langfuse port-forward svc/langfuse 13000:3000` | Lab 4 onwards |
-| 4 | Free for `kubectl get`, `curl`, `git`, `gh` | All the time |
-
-`tmux` or your editor's terminal split is fine; just don't close the port-forwards mid-lab — they exit the moment you do, and the symptoms downstream (chat hanging, traces not arriving) look unrelated.
-
-## Start here
-
-```bash
-cd 0-prereqs
-```
+Start with [the prerequisites](0-prereqs/README.md).

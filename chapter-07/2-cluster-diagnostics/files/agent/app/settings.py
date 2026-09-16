@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 
 class Settings:
@@ -12,10 +11,6 @@ class Settings:
 
     anthropic_model_id: str = os.getenv("ANTHROPIC_MODEL_ID", "claude-sonnet-4-5")
     anthropic_api_key: str | None = os.getenv("ANTHROPIC_API_KEY")
-
-    identity_dir: Path = Path(os.getenv("IDENTITY_DIR", "/state/identity"))
-    session_dir: Path = Path(os.getenv("SESSION_DIR", "/state/sessions"))
-    memory_file: Path = Path(os.getenv("MEMORY_FILE", "/state/memory/MEMORY.md"))
 
 
 

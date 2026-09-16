@@ -30,8 +30,6 @@ spec:
               value: bedrock
             - name: BEDROCK_MODEL_ID
               value: us.anthropic.claude-sonnet-4-5-20250929-v1:0
-            - name: BACKSTAGE_URL
-              value: http://host.docker.internal:7007
             - name: IDENTITY_DIR
               value: /state/identity
             - name: SESSION_DIR

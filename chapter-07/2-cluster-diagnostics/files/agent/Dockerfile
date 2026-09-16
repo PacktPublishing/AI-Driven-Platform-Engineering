@@ -11,9 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app/ ./app/
 
-ENV IDENTITY_DIR=/state/identity \
-    SESSION_DIR=/state/sessions \
-    PORT=8080
+ENV PORT=8080
 
 EXPOSE 8080
 

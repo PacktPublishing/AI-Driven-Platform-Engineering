@@ -16,7 +16,9 @@ class Settings:
     identity_dir: Path = Path(os.getenv("IDENTITY_DIR", "/state/identity"))
     session_dir: Path = Path(os.getenv("SESSION_DIR", "/state/sessions"))
     memory_file: Path = Path(os.getenv("MEMORY_FILE", "/state/memory/MEMORY.md"))
+    skills_dir: Path = Path(os.getenv("SKILLS_DIR", "/state/skills"))
 
+    mcp_gitops_url: str | None = os.getenv("MCP_GITOPS_URL")
 
 
 settings = Settings()

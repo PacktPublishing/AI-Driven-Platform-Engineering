@@ -13,6 +13,7 @@ COPY app/ ./app/
 
 ENV IDENTITY_DIR=/state/identity \
     SESSION_DIR=/state/sessions \
+    SKILLS_DIR=/state/skills \
     PORT=8080
 
 EXPOSE 8080

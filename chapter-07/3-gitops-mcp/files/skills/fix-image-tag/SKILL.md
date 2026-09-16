@@ -1,0 +1,50 @@
+---
+name: fix-image-tag
+description: |
+  Diagnose an ImagePullBackOff or ErrImagePull and propose a fix by opening
+  a pull request that corrects the container image tag in the Deployment
+  manifest. Use this skill when the user reports that a workload is failing
+  to pull its image, or when the user describes symptoms consistent with a
+  bad image tag (recently changed, typo, deleted upstream tag).
+when_to_use:
+  - User reports ImagePullBackOff, ErrImagePull, or 'image not found'
+  - User mentions a deployment is stuck or pods are not starting
+  - User asks to revert an image tag to a known-working value
+constraints:
+  - Always propose changes via a pull request. Never apply directly.
+  - Never modify resources outside the namespace the user identifies.
+  - The PR title must start with '[agent]' and follow the convention
+    '[agent] <verb> <resource> in <namespace>'.
+  - The PR body must include a one-paragraph rationale linking the symptom
+    to the root cause and citing the line that changed.
+---
+
+# Fix Image Tag
+
+## Procedure
+
+1. **Identify the target.** From the user's message, extract:
+   - The component name (e.g. `my-first-app`)
+   - The namespace (default to the component name if not specified)
+   - The reported symptom (ImagePullBackOff, ErrImagePull, etc.)
+
+2. **Read the Deployment manifest.** Call `get_file_contents` with the owner,
+   repository, and path `<component>/k8s/deployment.yaml`. Inspect
+   `spec.template.spec.containers[].image` and retain the returned blob SHA.
+
+3. **Decide the fix.** Use the diagnostic evidence and the replacement image
+   explicitly requested by the user. If the evidence does not establish an
+   image-tag problem or no replacement was provided, explain what is missing
+   and ask before proposing a change. Do not guess a default.
+
+4. **Create the pull request.** Call `create_branch` with an `agent/` branch name, then
+   `create_or_update_file` with the returned SHA and the full updated YAML,
+   then `create_pull_request` with the branch, default branch, title, and body.
+   Use `[agent] fix <component> image tag in <namespace>` as the title and
+   explain the symptom, changed line, and rationale in the body.
+
+## Output
+
+Return the PR URL and number to the user, plus a one-sentence summary of
+what changed and why. The user will review and merge; ArgoCD reconciles
+afterward. Do not poll — your work is done when the PR is open.
