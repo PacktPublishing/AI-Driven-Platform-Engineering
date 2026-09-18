@@ -20,7 +20,7 @@ spec:
       serviceAccountName: agent-runtime
       containers:
       - name: agent
-        image: agent-runtime:0.7.3
+        image: agent-runtime:0.8.3
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
@@ -40,10 +40,16 @@ spec:
           value: /state/memory/MEMORY.md
         - name: SKILLS_DIR
           value: /state/skills
+        - name: AUDIT_LOG
+          value: /state/audit/AUDIT.log
+        - name: AGENT_ID
+          value: platform-ops
+        - name: SECURITY_MODE
+          value: signed-token
+        - name: OPA_ENABLED
+          value: 'true'
         - name: MCP_GITOPS_URL
           value: http://gitops-mcp.agent-platform.svc.cluster.local:8080
-        - name: MCP_CLUSTER_URL
-          value: http://cluster-mcp.agent-platform.svc.cluster.local:8080
         - name: GITHUB_REPO_OWNER
           value: YOUR_USERNAME
         - name: GITHUB_REPO_NAME
@@ -55,12 +61,22 @@ spec:
             secretKeyRef:
               name: gitops-mcp-github
               key: GITHUB_PERSONAL_ACCESS_TOKEN
+        - name: LANGFUSE_HOST
+          value: http://langfuse.langfuse.svc.cluster.local:3000
+        - name: MCP_CLUSTER_URL
+          value: http://cluster-mcp.agent-platform.svc.cluster.local:8080
+        - name: TOKEN_ISSUER
+          value: http://localhost:18083/realms/platform
+        - name: TOKEN_JWKS_URL
+          value: http://keycloak.agent-platform.svc.cluster.local:8080/realms/platform/protocol/openid-connect/certs
         envFrom:
         - secretRef:
             name: agent-llm-credentials
         - secretRef:
-            name: agent-backstage-read
+            name: agent-langfuse-keys
             optional: true
+        - secretRef:
+            name: agent-backstage-read
         volumeMounts:
         - name: identity
           mountPath: /state/identity
@@ -70,6 +86,8 @@ spec:
           readOnly: true
         - name: memory
           mountPath: /state/memory
+        - name: audit
+          mountPath: /state/audit
         - name: sessions
           mountPath: /state/sessions
         startupProbe:
@@ -80,7 +98,7 @@ spec:
           failureThreshold: 60
         readinessProbe:
           httpGet:
-            path: /healthz
+            path: /readyz
             port: http
           initialDelaySeconds: 5
           periodSeconds: 10
@@ -107,6 +125,9 @@ spec:
       - name: memory
         persistentVolumeClaim:
           claimName: agent-memory
+      - name: audit
+        persistentVolumeClaim:
+          claimName: agent-audit
       - name: sessions
         emptyDir: {}
       automountServiceAccountToken: false
